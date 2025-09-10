@@ -1,0 +1,115 @@
+name: Manual Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: 'Source branch to deploy from'
+        required: true
+        default: 'main'
+        type: choice
+        options:
+          - main
+          - production
+      confirm_deployment:
+        description: 'Type "deploy" to confirm production deployment'
+        required: true
+        default: ''
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: asia-east1
+  SERVICE_NAME: clever-tour-frontend-prod
+  API_URL: https://api.clever-tour.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.source_branch }}
+
+    - name: Validate manual deployment
+      run: |
+        if [ "${{ github.event.inputs.confirm_deployment }}" != "deploy" ]; then
+          echo "❌ Deployment cancelled. You must type 'deploy' to confirm."
+          exit 1
+        fi
+        echo "✅ Production deployment confirmed from branch: ${{ github.event.inputs.source_branch }}"
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm run lint
+
+    - name: Build application
+      run: npm run build
+      env:
+        NEXT_PUBLIC_API_URL: ${{ env.API_URL }}
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA .
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy $SERVICE_NAME \
+          --image gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA \
+          --platform managed \
+          --region $REGION \
+          --allow-unauthenticated \
+          --port 3000 \
+          --memory 2Gi \
+          --cpu 2 \
+          --max-instances 20 \
+          --set-env-vars NEXT_PUBLIC_API_URL=$API_URL
+
+    - name: Get service URL
+      run: |
+        SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format='value(status.url)')
+        echo "Service deployed at: $SERVICE_URL"
+        echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: manual-v${{ github.run_number }}
+        release_name: Manual Production Release v${{ github.run_number }}
+        body: |
+          🚀 **Manual Production Deployment**
+          
+          **Status:** ✅ Successfully deployed
+          **Environment:** Production
+          **URL:** ${{ env.SERVICE_URL }}
+          **API:** ${{ env.API_URL }}
+          **Source Branch:** ${{ github.event.inputs.source_branch }}
+          **Commit:** \`${{ github.sha }}\`
+          **Triggered by:** ${{ github.actor }}
+          
+          The application has been manually deployed to the production environment.
+        draft: false
+        prerelease: false

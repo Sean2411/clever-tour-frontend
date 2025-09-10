@@ -13,9 +13,9 @@ RUN npm ci
 # 复制源代码
 COPY . .
 
-# 设置生产环境变量
+# 设置构建时环境变量
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_API_URL=http://smart-tourist-backend-alb-149914387.us-east-1.elb.amazonaws.com
+# NEXT_PUBLIC_API_URL will be set at runtime via Cloud Run
 
 # 构建应用
 RUN npm run build
@@ -46,13 +46,15 @@ EXPOSE 3000
 # 设置环境变量
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ENV NEXT_PUBLIC_API_URL=http://smart-tourist-backend-alb-149914387.us-east-1.elb.amazonaws.com
+# NEXT_PUBLIC_API_URL will be set at runtime via Cloud Run
 
 # 创建启动脚本
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
     echo 'echo "Starting Next.js application..."' >> /app/start.sh && \
     echo 'echo "NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL"' >> /app/start.sh && \
+    echo 'echo "NODE_ENV: $NODE_ENV"' >> /app/start.sh && \
+    echo 'echo "PORT: $PORT"' >> /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh
 
