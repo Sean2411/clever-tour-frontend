@@ -1,0 +1,51 @@
+{
+    "name": "smart-tourist",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Theme park tickets and travel services website",
+    "main": "index.js",
+    "scripts": {
+        "dev": "NEXT_PUBLIC_API_URL=https://api-dev.clever-tour.com next dev",
+        "prod": "NEXT_PUBLIC_API_URL=https://api.clever-tour.com next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "keywords": [
+        "tourism",
+        "theme park",
+        "tickets"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@chakra-ui/icons": "^2.1.1",
+        "@chakra-ui/react": "^2.8.2",
+        "@emotion/react": "^11.11.3",
+        "@emotion/styled": "^11.11.0",
+        "@stripe/react-stripe-js": "^3.9.0",
+        "@stripe/stripe-js": "^7.8.0",
+        "alipay-sdk": "^4.14.0",
+        "bcryptjs": "^2.4.3",
+        "exceljs": "^4.4.0",
+        "framer-motion": "^11.0.5",
+        "http-proxy-middleware": "^3.0.5",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.15.1",
+        "next": "^15.3.3",
+        "next-auth": "^4.24.11",
+        "node-fetch": "^3.3.2",
+        "nodemailer": "^6.9.7",
+        "puppeteer": "^24.9.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-icons": "^5.0.1",
+        "stripe": "^18.2.0",
+        "wechatpay-node-v3": "^2.2.1",
+        "xlsx": "^0.18.5"
+    },
+    "devDependencies": {
+        "eslint": "^8.56.0",
+        "eslint-config-next": "14.1.0"
+    }
+}
