@@ -10,7 +10,7 @@ const nextConfig = {
   },
   env: {
     MONGODB_URI: process.env.MONGODB_URI || 'mongodb://mongo:27017/smart-tourist',
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.clever-tour.com'
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com'
   },
   experimental: {
     serverActions: {

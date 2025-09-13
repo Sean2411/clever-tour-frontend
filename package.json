@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "NEXT_PUBLIC_API_URL=https://api-dev.clever-tour.com next dev",
         "prod": "NEXT_PUBLIC_API_URL=https://api.clever-tour.com next dev",
-        "build": "next build",
+        "build": "NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api-dev.clever-tour.com} next build",
         "start": "next start",
         "lint": "next lint --dir . --ext .js,.jsx,.ts,.tsx",
         "lint:fix": "next lint --fix"
