@@ -96,7 +96,7 @@ export default function About() {
             >
               <Heading size="2xl">About Clever Tour</Heading>
               <Text fontSize="xl" maxW="2xl">
-                We are passionate about creating unforgettable travel experiences and connecting people with the world's most amazing destinations.
+                We are passionate about creating unforgettable travel experiences and connecting people with the world&apos;s most amazing destinations.
               </Text>
             </VStack>
           </Container>

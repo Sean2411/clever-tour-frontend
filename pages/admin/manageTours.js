@@ -702,7 +702,7 @@ export default function ManageTours() {
 
               {/* Includes */}
               <FormControl>
-                <FormLabel>What's Included</FormLabel>
+                <FormLabel>What&apos;s Included</FormLabel>
                 <HStack>
                   <Input
                     placeholder="Add included item"
@@ -727,7 +727,7 @@ export default function ManageTours() {
 
               {/* Excludes */}
               <FormControl>
-                <FormLabel>What's Not Included</FormLabel>
+                <FormLabel>What&apos;s Not Included</FormLabel>
                 <HStack>
                   <Input
                     placeholder="Add excluded item"
@@ -770,7 +770,7 @@ export default function ManageTours() {
               Delete Tour
             </AlertDialogHeader>
             <AlertDialogBody>
-              Are you sure you want to delete tour "{deleteTour?.name}"? This action cannot be undone.
+              Are you sure you want to delete tour &quot;{deleteTour?.name}&quot;? This action cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={onDeleteClose}>

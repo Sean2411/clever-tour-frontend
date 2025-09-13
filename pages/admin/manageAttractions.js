@@ -848,7 +848,7 @@ export default function ManageAttractions() {
 
             <AlertDialogBody>
               Are you sure? This action cannot be undone. This will permanently delete the
-              attraction "{deleteAttraction?.name}".
+              attraction &quot;{deleteAttraction?.name}&quot;.
             </AlertDialogBody>
 
             <AlertDialogFooter>

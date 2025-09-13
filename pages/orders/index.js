@@ -109,7 +109,7 @@ export default function Orders() {
           <Card>
             <CardBody>
               <Text textAlign="center" color="gray.500">
-                You don't have any orders yet
+                You don&apos;t have any orders yet
               </Text>
                               <Button
                   mt={4}

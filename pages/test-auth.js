@@ -206,8 +206,8 @@ export default function TestAuth() {
         <Box p={4} borderWidth={1} borderRadius="md" bg="gray.50">
           <Text fontWeight="bold" mb={2}>使用说明:</Text>
           <VStack align="start" spacing={1}>
-            <Text>1. 点击"测试登录"按钮进行登录</Text>
-            <Text>2. 登录成功后，点击"测试管理员API"验证权限</Text>
+            <Text>1. 点击&quot;测试登录&quot;按钮进行登录</Text>
+            <Text>2. 登录成功后，点击&quot;测试管理员API&quot;验证权限</Text>
             <Text>3. 如果API测试成功，说明认证配置正确</Text>
             <Text>4. 然后可以访问 /admin/manageAttractions 和 /admin/manageTours</Text>
           </VStack>

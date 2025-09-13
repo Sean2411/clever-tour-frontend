@@ -318,7 +318,7 @@ export default function TourDetail() {
                   <DynamicTabPanel>
                     <VStack spacing={6} align="stretch">
                       <Box>
-                        <Heading size="md" mb={4}>What's Included</Heading>
+                        <Heading size="md" mb={4}>What&apos;s Included</Heading>
                         <List spacing={3}>
                           {tour.includes && tour.includes.length > 0 ? (
                             tour.includes.map((item, index) => (
@@ -334,7 +334,7 @@ export default function TourDetail() {
                       </Box>
 
                       <Box>
-                        <Heading size="md" mb={4}>What's Not Included</Heading>
+                        <Heading size="md" mb={4}>What&apos;s Not Included</Heading>
                         <List spacing={3}>
                           {tour.excludes && tour.excludes.length > 0 ? (
                             tour.excludes.map((item, index) => (

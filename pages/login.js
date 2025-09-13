@@ -130,7 +130,7 @@ export default function Login() {
               </VStack>
             </form>
             <Text mt={4} textAlign="center">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/register" passHref>
                 <Text as="span" color="blue.500" cursor="pointer">
                   Register now

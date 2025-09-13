@@ -89,7 +89,7 @@ export default function ProtectedRoute({
             Access Denied
           </Text>
           <Text color="gray.600">
-            You don't have permission to access this page.
+            You don&apos;t have permission to access this page.
           </Text>
         </VStack>
       </Box>

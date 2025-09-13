@@ -347,7 +347,7 @@ export default function ManageUsers() {
               Delete User
             </AlertDialogHeader>
             <AlertDialogBody>
-              Are you sure you want to delete user "{deleteUser?.username}"? This action cannot be undone.
+              Are you sure you want to delete user &quot;{deleteUser?.username}&quot;? This action cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={onDeleteClose}>
