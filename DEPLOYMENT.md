@@ -28,7 +28,7 @@ This project uses GitHub Actions for CI/CD and deploys to Google Cloud Run with 
 2. Enable the following APIs:
    ```bash
    gcloud services enable run.googleapis.com
-   gcloud services enable containerregistry.googleapis.com
+   gcloud services enable artifactregistry.googleapis.com
    gcloud services enable cloudbuild.googleapis.com
    ```
 
@@ -38,7 +38,15 @@ This project uses GitHub Actions for CI/CD and deploys to Google Cloud Run with 
      --display-name="GitHub Actions Service Account"
    ```
 
-4. Grant necessary permissions:
+4. Create Artifact Registry repository:
+   ```bash
+   gcloud artifacts repositories create clever-tour-frontend \
+     --repository-format=docker \
+     --location=us-central1 \
+     --description="Clever Tour Frontend Docker repository"
+   ```
+
+5. Grant necessary permissions:
    ```bash
    gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
      --member="serviceAccount:github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
@@ -46,14 +54,14 @@ This project uses GitHub Actions for CI/CD and deploys to Google Cloud Run with 
    
    gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
      --member="serviceAccount:github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/storage.admin"
+     --role="roles/artifactregistry.writer"
    
    gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
      --member="serviceAccount:github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
      --role="roles/iam.serviceAccountUser"
    ```
 
-5. Create and download service account key:
+6. Create and download service account key:
    ```bash
    gcloud iam service-accounts keys create key.json \
      --iam-account=github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com
