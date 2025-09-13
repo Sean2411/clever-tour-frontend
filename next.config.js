@@ -4,6 +4,10 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  eslint: {
+    // 在 CI/CD 环境中忽略 ESLint 错误
+    ignoreDuringBuilds: false,
+  },
   env: {
     MONGODB_URI: process.env.MONGODB_URI || 'mongodb://mongo:27017/smart-tourist',
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.clever-tour.com'
