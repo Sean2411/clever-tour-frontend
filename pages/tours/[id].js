@@ -42,7 +42,7 @@ import {
   handleInputChange,
   handleNumberChange,
   getDefaultFormData
-} from './util';
+} from '../../lib/tours/util';
 
 export default function TourDetail() {
   const [tour, setTour] = useState(null);

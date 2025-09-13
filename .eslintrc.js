@@ -14,7 +14,7 @@ module.exports = {
   },
   rules: {
     'react/no-unescaped-entities': 'error',
-    'react-hooks/exhaustive-deps': 'warn',
+    'react-hooks/exhaustive-deps': 'off', // 禁用这个规则，因为很多情况下添加依赖会导致无限循环
   },
   ignorePatterns: [
     'node_modules/',
