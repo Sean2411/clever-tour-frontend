@@ -28,6 +28,7 @@ import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import AdminCard from '../../../components/AdminCard';
 import ResponsiveGrid from '../../../components/ResponsiveGrid';
+import { AdminOnly } from '../../../components/ProtectedRoute';
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
@@ -44,9 +45,21 @@ export default function AdminBookings() {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
+      
+      // 获取认证 token
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch(
-        `${apiUrl}/api/admin/bookings?search=${searchTerm}&status=${statusFilter}`
+        `${apiUrl}/api/admin/bookings?search=${searchTerm}&status=${statusFilter}`,
+        { headers }
       );
       const data = await response.json();
       
@@ -71,12 +84,21 @@ export default function AdminBookings() {
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
+      
+      // 获取认证 token
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`${apiUrl}/api/admin/bookings/${bookingId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -234,8 +256,19 @@ export default function AdminBookings() {
       setExportLoading(true);
       
       // 获取所有预订数据（不应用搜索和过滤）
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-      const response = await fetch(`${apiUrl}/api/admin/bookings`);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
+      
+      // 获取认证 token
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`${apiUrl}/api/admin/bookings`, { headers });
       const data = await response.json();
       
       if (!response.ok) {
@@ -270,7 +303,7 @@ export default function AdminBookings() {
   };
 
   return (
-    <>
+    <AdminOnly>
       <Head>
         <title>Booking Management - Smart Tourist</title>
       </Head>
@@ -417,6 +450,6 @@ export default function AdminBookings() {
         </VStack>
       </Container>
       <Footer />
-    </>
+    </AdminOnly>
   );
 } 

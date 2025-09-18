@@ -32,14 +32,15 @@ export default function TestAuth() {
   const testLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
+      const response = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: 'lucius2411@gmail.com',
-          password: 'password123'
+          password: '123123'
         })
       });
 
@@ -85,6 +86,44 @@ export default function TestAuth() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const mockLogin = () => {
+    // 模拟管理员用户数据
+    const mockUser = {
+      id: 3,
+      username: 'sean',
+      email: 'lucius2411@gmail.com',
+      role: 'admin',
+      permissions: {
+        canAccessAdmin: true,
+        canManageUsers: true,
+        canManageBookings: true,
+        canViewReports: true
+      }
+    };
+    
+    const mockToken = 'mock-jwt-token-for-testing';
+    
+    // 保存到localStorage
+    localStorage.setItem('token', mockToken);
+    localStorage.setItem('user', JSON.stringify(mockUser));
+    
+    toast({
+      title: '模拟登录成功',
+      description: '已设置管理员用户数据',
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    });
+
+    // 更新显示
+    setAuthData({
+      token: mockToken.substring(0, 50) + '...',
+      user: mockUser,
+      hasToken: true,
+      hasUser: true
+    });
   };
 
   const testAdminAPI = async () => {
@@ -185,6 +224,13 @@ export default function TestAuth() {
             loadingText="登录中..."
           >
             测试登录
+          </Button>
+          
+          <Button 
+            colorScheme="green" 
+            onClick={mockLogin}
+          >
+            模拟管理员登录
           </Button>
           
           <Button 

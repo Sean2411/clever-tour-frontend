@@ -33,7 +33,7 @@ export default function Orders() {
 
   const fetchOrders = async () => {
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
       const response = await fetch(`${API_BASE_URL}/api/bookings/my-bookings`);
       const data = await response.json();
       

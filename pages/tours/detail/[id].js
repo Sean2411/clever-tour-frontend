@@ -52,6 +52,7 @@ import { FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
 import Head from 'next/head';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
+import ProtectedRoute from '../../../components/ProtectedRoute';
 
 // 动态导入可能引起SSR问题的组件
 const DynamicTabs = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.Tabs })), { ssr: false });
@@ -68,7 +69,7 @@ const DynamicModalHeader = dynamic(() => import('@chakra-ui/react').then(mod => 
 const DynamicModalBody = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.ModalBody })), { ssr: false });
 const DynamicModalCloseButton = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.ModalCloseButton })), { ssr: false });
 
-export default function TourDetail() {
+function TourDetailContent() {
   const [tour, setTour] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -545,5 +546,13 @@ export default function TourDetail() {
       </DynamicModal>
       <Footer />
     </>
+  );
+}
+
+export default function TourDetail() {
+  return (
+    <ProtectedRoute>
+      <TourDetailContent />
+    </ProtectedRoute>
   );
 } 

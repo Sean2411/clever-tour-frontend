@@ -18,7 +18,11 @@ export default function ProtectedRoute({
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
       
+      console.log('🔍 ProtectedRoute - Token exists:', !!token);
+      console.log('🔍 ProtectedRoute - User data exists:', !!userData);
+      
       if (!token || !userData) {
+        console.log('❌ ProtectedRoute - Missing token or user data, redirecting to login');
         router.push('/login');
         return;
       }
@@ -33,6 +37,7 @@ export default function ProtectedRoute({
         // Check role-based access
         if (requiredRole) {
           console.log('ProtectedRoute - Checking role access:', parsedUser.role, 'vs', requiredRole);
+          console.log('ProtectedRoute - User object:', parsedUser);
           if (parsedUser.role !== requiredRole && parsedUser.role !== 'admin') {
             console.log('ProtectedRoute - Role access denied');
             setHasAccess(false);

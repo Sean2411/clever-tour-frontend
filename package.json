@@ -6,6 +6,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "NEXT_PUBLIC_API_URL=https://api-dev.clever-tour.com next dev",
+        "dev:https": "NEXT_PUBLIC_API_URL=http://localhost:5001 next dev --experimental-https",
         "prod": "NEXT_PUBLIC_API_URL=https://api.clever-tour.com next dev",
         "build": "NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api-dev.clever-tour.com} next build",
         "start": "next start",

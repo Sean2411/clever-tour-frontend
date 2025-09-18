@@ -56,7 +56,7 @@ export default function ToursList() {
   const fetchTours = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
       const response = await fetch(
         `${apiUrl}/api/tours?page=${page}&search=${searchTerm}&category=${category}&duration=${duration}`
       );

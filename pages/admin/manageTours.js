@@ -666,12 +666,14 @@ export default function ManageTours() {
                   />
                 </HStack>
                 <Box mt={2}>
-                  {tourForm.features.map((feature, index) => (
-                    <Tag key={index} size="md" colorScheme="blue" mr={2} mb={2}>
-                      <TagLabel>{feature}</TagLabel>
-                      <TagCloseButton onClick={() => removeArrayItem('features', index)} />
-                    </Tag>
-                  ))}
+                  {tourForm.features
+                    .filter(feature => typeof feature === 'string')
+                    .map((feature, index) => (
+                      <Tag key={index} size="md" colorScheme="blue" mr={2} mb={2}>
+                        <TagLabel>{feature}</TagLabel>
+                        <TagCloseButton onClick={() => removeArrayItem('features', index)} />
+                      </Tag>
+                    ))}
                 </Box>
               </FormControl>
 
@@ -691,12 +693,14 @@ export default function ManageTours() {
                   />
                 </HStack>
                 <Box mt={2}>
-                  {tourForm.highlights.map((highlight, index) => (
-                    <Tag key={index} size="md" colorScheme="green" mr={2} mb={2}>
-                      <TagLabel>{highlight}</TagLabel>
-                      <TagCloseButton onClick={() => removeArrayItem('highlights', index)} />
-                    </Tag>
-                  ))}
+                  {tourForm.highlights
+                    .filter(highlight => typeof highlight === 'string')
+                    .map((highlight, index) => (
+                      <Tag key={index} size="md" colorScheme="green" mr={2} mb={2}>
+                        <TagLabel>{highlight}</TagLabel>
+                        <TagCloseButton onClick={() => removeArrayItem('highlights', index)} />
+                      </Tag>
+                    ))}
                 </Box>
               </FormControl>
 
@@ -716,12 +720,14 @@ export default function ManageTours() {
                   />
                 </HStack>
                 <Box mt={2}>
-                  {tourForm.includes.map((item, index) => (
-                    <Tag key={index} size="md" colorScheme="teal" mr={2} mb={2}>
-                      <TagLabel>{item}</TagLabel>
-                      <TagCloseButton onClick={() => removeArrayItem('includes', index)} />
-                    </Tag>
-                  ))}
+                  {tourForm.includes
+                    .filter(item => typeof item === 'string')
+                    .map((item, index) => (
+                      <Tag key={index} size="md" colorScheme="teal" mr={2} mb={2}>
+                        <TagLabel>{item}</TagLabel>
+                        <TagCloseButton onClick={() => removeArrayItem('includes', index)} />
+                      </Tag>
+                    ))}
                 </Box>
               </FormControl>
 
@@ -741,12 +747,14 @@ export default function ManageTours() {
                   />
                 </HStack>
                 <Box mt={2}>
-                  {tourForm.excludes.map((item, index) => (
-                    <Tag key={index} size="md" colorScheme="red" mr={2} mb={2}>
-                      <TagLabel>{item}</TagLabel>
-                      <TagCloseButton onClick={() => removeArrayItem('excludes', index)} />
-                    </Tag>
-                  ))}
+                  {tourForm.excludes
+                    .filter(item => typeof item === 'string')
+                    .map((item, index) => (
+                      <Tag key={index} size="md" colorScheme="red" mr={2} mb={2}>
+                        <TagLabel>{item}</TagLabel>
+                        <TagCloseButton onClick={() => removeArrayItem('excludes', index)} />
+                      </Tag>
+                    ))}
                 </Box>
               </FormControl>
             </VStack>

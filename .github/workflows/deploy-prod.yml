@@ -50,6 +50,7 @@ jobs:
       run: npm run build
       env:
         NEXT_PUBLIC_API_URL: ${{ env.API_URL }}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.PROD_STRIPE_PUBLISHABLE_KEY }}
 
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2

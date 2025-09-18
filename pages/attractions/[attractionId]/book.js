@@ -33,8 +33,9 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
+import ProtectedRoute from '../../../components/ProtectedRoute';
 
-export default function BookAttraction() {
+function BookAttractionContent() {
   const [attraction, setAttraction] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -351,5 +352,13 @@ export default function BookAttraction() {
       </Container>
       <Footer />
     </>
+  );
+}
+
+export default function BookAttraction() {
+  return (
+    <ProtectedRoute>
+      <BookAttractionContent />
+    </ProtectedRoute>
   );
 } 

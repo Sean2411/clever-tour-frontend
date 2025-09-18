@@ -22,12 +22,14 @@ import {
   AlertTitle,
   AlertDescription,
   Spinner,
-  useToast
+  useToast,
+  Select
 } from '@chakra-ui/react';
 import { CloseIcon, ArrowBackIcon } from '@chakra-ui/icons';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import StripePaymentForm from './StripePaymentForm';
+import StripeCheckoutButton from './StripeCheckoutButton';
 
 // 加载 Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -139,17 +141,53 @@ export default function TwoStepBookingModal({
     setBookingError(null);
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
+      
+      // 获取当前用户信息
+      const userData = localStorage.getItem('user');
+      let userId = null;
+      
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          userId = user.id;
+          console.log('👤 Current user ID:', userId);
+        } catch (error) {
+          console.error('❌ Error parsing user data:', error);
+        }
+      }
+      
+      const bookingData = {
+        tourId,
+        ...formData,
+        totalPrice: getTotalPrice()
+      };
+      
+      // 添加用户ID字段（尝试不同的字段名称）
+      if (userId) {
+        bookingData.user_id = userId;
+        bookingData.userId = userId;
+        bookingData.customerId = userId;
+      }
+      
+      console.log('📊 Booking data with user_id:', bookingData);
+      
+      // 获取认证 token
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      // 添加 Authorization header 如果 token 存在
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+        console.log('🔐 Using JWT token for authentication');
+      }
+      
       const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tourId,
-          ...formData,
-          totalPrice: getTotalPrice()
-        }),
+        headers,
+        body: JSON.stringify(bookingData),
       });
 
       const result = await response.json();
@@ -173,9 +211,15 @@ export default function TwoStepBookingModal({
       console.error('Error creating booking:', error);
       setBookingError(error.message);
       
+      // 提供更友好的错误信息
+      let errorMessage = error.message;
+      if (error.message.includes('Missing required fields')) {
+        errorMessage = 'Please check that all required fields are filled correctly. If the problem persists, please contact support.';
+      }
+      
       toast({
         title: 'Booking Failed',
-        description: error.message,
+        description: errorMessage,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -363,13 +407,19 @@ export default function TwoStepBookingModal({
                     />
                   </FormControl>
                   <FormControl>
-                    <FormLabel>Time</FormLabel>
-                    <Input
+                    <FormLabel>Departure time and location</FormLabel>
+                    <Select
                       name="time"
-                      type="time"
                       value={formData.time}
                       onChange={onInputChange}
-                    />
+                      placeholder="Select departure time and location"
+                    >
+                      {tour?.departureTimeAndLocation?.map((option, index) => (
+                        <option key={index} value={`${option.time} - ${option.location}`}>
+                          {option.time} - {option.location}
+                        </option>
+                      ))}
+                    </Select>
                   </FormControl>
                 </HStack>
 
@@ -476,6 +526,12 @@ export default function TwoStepBookingModal({
                   <Text color="gray.600">Date:</Text>
                   <Text>{formData.date}</Text>
                 </HStack>
+                {formData.time && (
+                  <HStack justify="space-between">
+                    <Text color="gray.600">Departure:</Text>
+                    <Text>{formData.time}</Text>
+                  </HStack>
+                )}
                 <HStack justify="space-between">
                   <Text color="gray.600">People:</Text>
                   <Text>{formData.adults} Adults + {formData.children} Children</Text>
@@ -488,14 +544,15 @@ export default function TwoStepBookingModal({
             </Box>
 
             {/* 支付表单 */}
-            <Elements stripe={stripePromise}>
-              <StripePaymentForm
-                amount={getTotalPrice()}
-                bookingId={bookingId}
-                onPaymentSuccess={handlePaymentSuccess}
-                onPaymentError={handlePaymentError}
-              />
-            </Elements>
+            <StripeCheckoutButton
+              amount={getTotalPrice()}
+              bookingId={bookingId}
+              tourName={tour?.name}
+              customerName={formData.name}
+              customerEmail={formData.email}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+            />
           </VStack>
         )}
       </div>

@@ -167,8 +167,8 @@ export default function Navbar() {
                   </>
                 )}
                 
-                {/* Agent and Admin menu items */}
-                {(user.role === 'agent' || user.role === 'admin') && (
+                {/* Agent menu items (only for agents, not admins) */}
+                {user.role === 'agent' && (
                   <>
                     <MenuDivider />
                     <MenuItem onClick={() => router.push('/agent/bookings')}>
@@ -334,8 +334,8 @@ export default function Navbar() {
                   </>
                 )}
                 
-                {/* Agent mobile menu items */}
-                {(user.role === 'agent' || user.role === 'admin') && (
+                {/* Agent mobile menu items (only for agents, not admins) */}
+                {user.role === 'agent' && (
                   <>
                     <Divider />
                     <Text px={3} py={1} fontSize="xs" color="gray.500" fontWeight="bold">

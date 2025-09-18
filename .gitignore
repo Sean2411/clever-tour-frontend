@@ -16,6 +16,7 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
+env.local.dev
 
 # Logs
 *.log
@@ -101,3 +102,5 @@ keys/
 *.json
 !package.json
 !package-lock.json
+
+certificates

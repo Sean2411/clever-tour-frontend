@@ -35,6 +35,7 @@ import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import TwoStepBookingModal from '../../components/TwoStepBookingModal';
+import ProtectedRoute from '../../components/ProtectedRoute';
 import {
   fetchTourDetails,
   calculateTotalPrice,
@@ -44,7 +45,7 @@ import {
   getDefaultFormData
 } from '../../lib/tours/util';
 
-export default function TourDetail() {
+function TourDetailContent() {
   const [tour, setTour] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -78,8 +79,21 @@ export default function TourDetail() {
       const result = await fetchTourDetails(id);
       
       if (result.success) {
+        // 处理 304 Not Modified 响应
+        if (result.notModified) {
+          console.log('📋 Using cached tour data');
+          // 对于 304 响应，我们可以保持当前状态或显示缓存指示
+          // 这里我们简单地不更新状态，保持现有的 tour 数据
+          return;
+        }
+        
         // Clean up the tour data to handle mixed types in arrays
         const tourData = result.data;
+        
+        if (!tourData) {
+          setError('No tour data received');
+          return;
+        }
         
         // Filter features array to only include strings
         if (tourData.features && Array.isArray(tourData.features)) {
@@ -409,5 +423,13 @@ export default function TourDetail() {
       />
       <Footer />
     </>
+  );
+}
+
+export default function TourDetail() {
+  return (
+    <ProtectedRoute>
+      <TourDetailContent />
+    </ProtectedRoute>
   );
 } 
