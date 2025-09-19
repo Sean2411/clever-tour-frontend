@@ -1,4 +1,4 @@
-import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { ChakraProvider, extendTheme, Box, Flex } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import '../styles/responsive.css';
 
@@ -40,7 +40,9 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
+      <Box minH="100vh" display="flex" flexDirection="column">
+        <Component {...pageProps} />
+      </Box>
     </ChakraProvider>
   );
 }

@@ -194,14 +194,14 @@ const AdminCard = ({
                 </Text>
                                 <HStack spacing={2}>
                   {onEdit && (
-                    <Tooltip label="View Details">
+                    <Tooltip label="Edit Details">
                       <IconButton
                         icon={<EditIcon />}
                         colorScheme="blue"
                         variant="ghost"
                         size="sm"
                         onClick={() => onEdit(item)}
-                        aria-label="View Details"
+                        aria-label="Edit Details"
                       />
                     </Tooltip>
                   )}
@@ -273,14 +273,14 @@ const AdminCard = ({
         {actions && (
           <HStack spacing={2} flexShrink={0}>
             {onEdit && (
-              <Tooltip label="View Details">
+              <Tooltip label="Edit Details">
                 <IconButton
                   icon={<EditIcon />}
                   colorScheme="blue"
                   variant="ghost"
                   size="sm"
                   onClick={() => onEdit(item)}
-                  aria-label="View Details"
+                  aria-label="Edit Details"
                 />
               </Tooltip>
             )}

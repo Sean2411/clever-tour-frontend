@@ -16,6 +16,7 @@ export default function Footer() {
       color={useColorModeValue('gray.700', 'gray.200')}
       borderTop="1px"
       borderColor={useColorModeValue('gray.200', 'gray.700')}
+      mt="auto"
     >
       <Container
         as={Stack}
