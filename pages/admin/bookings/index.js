@@ -24,11 +24,11 @@ import {
 import { SearchIcon, DownloadIcon } from '@chakra-ui/icons';
 import * as XLSX from 'xlsx';
 import Head from 'next/head';
-import Navbar from '../../../components/Navbar';
-import Footer from '../../../components/Footer';
+import Layout from '../../../components/Layout';
 import AdminCard from '../../../components/AdminCard';
 import ResponsiveGrid from '../../../components/ResponsiveGrid';
 import { AdminOnly } from '../../../components/ProtectedRoute';
+import { api } from '../../../lib/api';
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
@@ -45,28 +45,7 @@ export default function AdminBookings() {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
-      
-      // 获取认证 token
-      const token = localStorage.getItem('token');
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(
-        `${apiUrl}/api/admin/bookings?search=${searchTerm}&status=${statusFilter}`,
-        { headers }
-      );
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to get booking list');
-      }
-
+      const data = await api.get(`/api/admin/bookings?search=${searchTerm}&status=${statusFilter}`);
       setBookings(data);
     } catch (err) {
       console.error('Failed to get booking list:', err);
@@ -84,29 +63,7 @@ export default function AdminBookings() {
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
-      
-      // 获取认证 token
-      const token = localStorage.getItem('token');
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${apiUrl}/api/admin/bookings/${bookingId}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to update booking status');
-      }
+      await api.patch(`/api/admin/bookings/${bookingId}`, { status: newStatus });
 
       toast({
         title: 'Success',
@@ -158,6 +115,73 @@ export default function AdminBookings() {
     return texts[status] || status;
   };
 
+  // 统一的数据处理函数，用于显示和导出
+  const processBookingData = (booking) => {
+    // 处理 Sequelize 实例结构，优先使用 dataValues
+    const cleanBooking = booking.dataValues || booking;
+    
+    return {
+      id: cleanBooking.id || booking.id || booking._id || cleanBooking.bookingNumber,
+      bookingNumber: cleanBooking.bookingNumber || booking.bookingNumber,
+      attractionName: cleanBooking.attraction?.name || booking.attraction?.name || cleanBooking.tour?.name || booking.tour?.name || cleanBooking.attractionId?.name || cleanBooking.tourId?.name || 'Unknown Attraction/Tour',
+      customer: (cleanBooking.customer && typeof cleanBooking.customer === 'object') ? cleanBooking.customer.name : (cleanBooking.customer || cleanBooking.name || booking.name || 'Unknown Customer'),
+      customerEmail: (cleanBooking.customer && typeof cleanBooking.customer === 'object') ? cleanBooking.customer.email : (cleanBooking.email || booking.email || 'Unknown'),
+      customerPhone: (cleanBooking.customer && typeof cleanBooking.customer === 'object') ? cleanBooking.customer.phone : (cleanBooking.phone || booking.phone || 'Unknown'),
+      date: (() => {
+        const dateStr = cleanBooking.bookingDate || cleanBooking.date || booking.date || cleanBooking.createdAt || booking.createdAt;
+        if (!dateStr) return 'N/A';
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return 'N/A';
+          const dateOnly = date.toLocaleDateString();
+          const timeOnly = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          return `${dateOnly}\n${timeOnly}`;
+        } catch (e) {
+          return 'N/A';
+        }
+      })(),
+      dateForExport: (() => {
+        const dateStr = cleanBooking.bookingDate || cleanBooking.date || booking.date || cleanBooking.createdAt || booking.createdAt;
+        if (!dateStr) return 'N/A';
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return 'N/A';
+          return date.toLocaleDateString();
+        } catch (e) {
+          return 'N/A';
+        }
+      })(),
+      timeForExport: (() => {
+        const dateStr = cleanBooking.bookingDate || cleanBooking.date || booking.date || cleanBooking.createdAt || booking.createdAt;
+        if (!dateStr) return 'N/A';
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return 'N/A';
+          return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } catch (e) {
+          return 'N/A';
+        }
+      })(),
+      people: `${cleanBooking.numberOfAdults || cleanBooking.adults || booking.adults || 0} Adults + ${cleanBooking.numberOfChildren || cleanBooking.children || booking.children || 0} Children`,
+      adults: cleanBooking.numberOfAdults || cleanBooking.adults || booking.adults || 0,
+      children: cleanBooking.numberOfChildren || cleanBooking.children || booking.children || 0,
+      totalPrice: cleanBooking.totalPrice || cleanBooking.total_price || booking.totalPrice || booking.total_price || 'N/A',
+      status: getStatusText(cleanBooking.status || booking.status),
+      paymentMethod: cleanBooking.paymentMethod || booking.paymentMethod || 'N/A',
+      paymentStatus: cleanBooking.paymentStatus || booking.paymentStatus || 'N/A',
+      specialRequests: cleanBooking.specialRequests || booking.specialRequests || '',
+      createdAt: (() => {
+        const dateStr = cleanBooking.createdAt || booking.createdAt;
+        if (!dateStr) return 'N/A';
+        try {
+          return new Date(dateStr).toLocaleString();
+        } catch (e) {
+          return 'N/A';
+        }
+      })()
+    };
+  };
+
   // Define fields for AdminCard - responsive layout
   const bookingFields = [
     { key: 'bookingNumber', label: 'Booking Number', type: 'text', flex: 1.2 },
@@ -178,10 +202,8 @@ export default function AdminBookings() {
       'Customer Phone',
       'Booking Date',
       'Booking Time',
-      'Visit Date',
       'Adults',
       'Children',
-      'Rooms',
       'Total Price',
       'Status',
       'Payment Method',
@@ -192,25 +214,26 @@ export default function AdminBookings() {
 
     const csvContent = [
       headers.join(','),
-      ...data.map(booking => [
-        booking.orderNumber || booking.bookingNumber,
-        booking.attraction?.name || booking.attractionId?.name || booking.tourId?.name || 'Unknown',
-        (booking.customer && typeof booking.customer === 'object') ? booking.customer.name : (booking.customer || booking.name || 'Unknown'),
-        (booking.customer && typeof booking.customer === 'object') ? booking.customer.email : (booking.email || 'Unknown'),
-        (booking.customer && typeof booking.customer === 'object') ? booking.customer.phone : (booking.phone || 'Unknown'),
-        booking.bookingDate || new Date(booking.date || booking.createdAt).toLocaleDateString(),
-        booking.bookingTime || booking.time || 'N/A',
-        booking.visitDate ? new Date(booking.visitDate).toLocaleDateString() : 'TBD',
-        booking.numberOfAdults || booking.adults || 0,
-        booking.numberOfChildren || booking.children || 0,
-        booking.rooms || 1,
-        booking.totalPrice,
-        booking.status,
-        booking.paymentMethod || 'N/A',
-        booking.paymentStatus || 'N/A',
-        booking.specialRequests || booking.notes || '',
-        new Date(booking.createdAt).toLocaleString()
-      ].join(','))
+      ...data.map(booking => {
+        const processed = processBookingData(booking);
+        return [
+          processed.bookingNumber,
+          processed.attractionName,
+          processed.customer,
+          processed.customerEmail,
+          processed.customerPhone,
+          processed.dateForExport,
+          processed.timeForExport,
+          processed.adults,
+          processed.children,
+          processed.totalPrice,
+          processed.status,
+          processed.paymentMethod,
+          processed.paymentStatus,
+          processed.specialRequests,
+          processed.createdAt
+        ].join(',');
+      })
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -225,25 +248,26 @@ export default function AdminBookings() {
   };
 
   const exportToExcel = (data) => {
-    const worksheet = XLSX.utils.json_to_sheet(data.map(booking => ({
-      'Order Number': booking.orderNumber || booking.bookingNumber,
-      'Attraction/Tour Name': booking.attraction?.name || booking.attractionId?.name || booking.tourId?.name || 'Unknown',
-      'Customer Name': (booking.customer && typeof booking.customer === 'object') ? booking.customer.name : (booking.customer || booking.name || 'Unknown'),
-      'Customer Email': (booking.customer && typeof booking.customer === 'object') ? booking.customer.email : (booking.email || 'Unknown'),
-      'Customer Phone': (booking.customer && typeof booking.customer === 'object') ? booking.customer.phone : (booking.phone || 'Unknown'),
-      'Booking Date': booking.bookingDate || new Date(booking.date || booking.createdAt).toLocaleDateString(),
-      'Booking Time': booking.bookingTime || booking.time || 'N/A',
-      'Visit Date': booking.visitDate ? new Date(booking.visitDate).toLocaleDateString() : 'TBD',
-      'Adults': booking.numberOfAdults || booking.adults || 0,
-      'Children': booking.numberOfChildren || booking.children || 0,
-      'Rooms': booking.rooms || 1,
-      'Total Price': booking.totalPrice,
-      'Status': booking.status,
-      'Payment Method': booking.paymentMethod || 'N/A',
-      'Payment Status': booking.paymentStatus || 'N/A',
-      'Special Requests': booking.specialRequests || booking.notes || '',
-      'Created At': new Date(booking.createdAt).toLocaleString()
-    })));
+    const worksheet = XLSX.utils.json_to_sheet(data.map(booking => {
+      const processed = processBookingData(booking);
+      return {
+        'Order Number': processed.bookingNumber,
+        'Attraction/Tour Name': processed.attractionName,
+        'Customer Name': processed.customer,
+        'Customer Email': processed.customerEmail,
+        'Customer Phone': processed.customerPhone,
+        'Booking Date': processed.dateForExport,
+        'Booking Time': processed.timeForExport,
+        'Adults': processed.adults,
+        'Children': processed.children,
+        'Total Price': processed.totalPrice,
+        'Status': processed.status,
+        'Payment Method': processed.paymentMethod,
+        'Payment Status': processed.paymentStatus,
+        'Special Requests': processed.specialRequests,
+        'Created At': processed.createdAt
+      };
+    }));
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Bookings');
@@ -256,24 +280,7 @@ export default function AdminBookings() {
       setExportLoading(true);
       
       // 获取所有预订数据（不应用搜索和过滤）
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
-      
-      // 获取认证 token
-      const token = localStorage.getItem('token');
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${apiUrl}/api/admin/bookings`, { headers });
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to get booking data for export');
-      }
+      const data = await api.get('/api/admin/bookings');
 
       if (format === 'csv') {
         exportToCSV(data);
@@ -308,8 +315,8 @@ export default function AdminBookings() {
         <title>Booking Management - Smart Tourist</title>
       </Head>
 
-      <Navbar />
-      <Container maxW="container.xl" py={{ base: 4, md: 8 }}>
+      <Layout>
+        <Container maxW="container.xl" py={{ base: 4, md: 8 }}>
         <VStack spacing={{ base: 6, md: 8 }} align="stretch">
           <VStack spacing={4} align="stretch">
             <Heading 
@@ -416,40 +423,29 @@ export default function AdminBookings() {
               </Box>
               
               <ResponsiveGrid columns={{ base: 1, md: 1 }} spacing={{ base: 4, md: 6 }}>
-                {bookings.map((booking) => (
-                  <AdminCard
-                    key={booking.id}
-                    item={{
-                      ...booking,
-                      attractionName: booking.attraction?.name || booking.attractionId?.name || booking.tourId?.name || 'Unknown Attraction/Tour',
-                      customer: (booking.customer && typeof booking.customer === 'object') ? booking.customer.name : (booking.customer || booking.name || 'Unknown Customer'),
-                      date: (() => {
-                        const dateStr = booking.bookingDate || booking.date || booking.createdAt;
-                        if (!dateStr) return 'N/A';
-                        const date = new Date(dateStr);
-                        const dateOnly = date.toLocaleDateString();
-                        const timeOnly = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        return `${dateOnly}\n${timeOnly}`;
-                      })(),
-                      people: `${booking.numberOfAdults || booking.adults || 0} Adults + ${booking.numberOfChildren || booking.children || 0} Children`,
-                      totalPrice: booking.totalPrice,
-                      status: getStatusText(booking.status)
-                    }}
-                    fields={bookingFields}
-                    onStatusChange={(newStatus) => handleStatusChange(booking.id, newStatus)}
-                    currentStatus={booking.status}
-                    availableStatuses={['pending', 'confirmed', 'cancelled']}
-                    getStatusColor={getStatusColor}
-                    actions={true}
-                    showStatusChange={true}
-                  />
-                ))}
+                {bookings.map((booking, index) => {
+                  const processedItem = processBookingData(booking);
+                  
+                  return (
+                    <AdminCard
+                      key={processedItem.id || booking.bookingNumber || `booking-${index}`}
+                      item={processedItem}
+                      fields={bookingFields}
+                      onStatusChange={(newStatus) => handleStatusChange(booking.id, newStatus)}
+                      currentStatus={booking.status}
+                      availableStatuses={['pending', 'confirmed', 'cancelled']}
+                      getStatusColor={getStatusColor}
+                      actions={true}
+                      showStatusChange={true}
+                    />
+                  );
+                })}
               </ResponsiveGrid>
             </Box>
           )}
         </VStack>
-      </Container>
-      <Footer />
+        </Container>
+      </Layout>
     </AdminOnly>
   );
 } 
