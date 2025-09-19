@@ -444,6 +444,8 @@ const DesktopNav = () => {
 };
 
 const DesktopSubNav = ({ label, href, subLabel }) => {
+  const hoverBg = useColorModeValue('blue.50', 'gray.900');
+  
   return (
     <NextLink href={href} passHref>
       <Link
@@ -451,7 +453,7 @@ const DesktopSubNav = ({ label, href, subLabel }) => {
         display={'block'}
         p={2}
         rounded={'md'}
-        _hover={{ bg: useColorModeValue('blue.50', 'gray.900') }}>
+        _hover={{ bg: hoverBg }}>
         <Stack direction={'row'} align={'center'}>
           <Box>
             <Text
@@ -493,6 +495,8 @@ const MobileNav = () => {
 
 const MobileNavItem = ({ label, children, href }) => {
   const { isOpen, onToggle } = useDisclosure();
+  const textColor = useColorModeValue('gray.600', 'gray.200');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   return (
     <Stack spacing={4} onClick={children && onToggle}>
@@ -507,7 +511,7 @@ const MobileNavItem = ({ label, children, href }) => {
             }}>
             <Text
               fontWeight={600}
-              color={useColorModeValue('gray.600', 'gray.200')}>
+              color={textColor}>
               {label}
             </Text>
             {children && (
@@ -531,7 +535,7 @@ const MobileNavItem = ({ label, children, href }) => {
           }}>
           <Text
             fontWeight={600}
-            color={useColorModeValue('gray.600', 'gray.200')}>
+            color={textColor}>
             {label}
           </Text>
           {children && (
@@ -552,7 +556,7 @@ const MobileNavItem = ({ label, children, href }) => {
           pl={4}
           borderLeft={1}
           borderStyle={'solid'}
-          borderColor={useColorModeValue('gray.200', 'gray.700')}
+          borderColor={borderColor}
           align={'start'}>
           {children &&
             children.map((child) => (
