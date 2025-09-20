@@ -152,13 +152,20 @@ const StripePaymentForm = ({
 
     } catch (err) {
       console.error('Payment error:', err);
-      setError(err.message);
+      
+      // 特殊处理 "live mode" 错误
+      let errorMessage = err.message;
+      if (err.message.includes('live mode') && err.message.includes('test card')) {
+        errorMessage = '检测到 Stripe 账户处于生产模式。请确保在 Stripe Dashboard 中切换到测试模式，并使用正确的测试密钥。';
+      }
+      
+      setError(errorMessage);
       
       toast({
         title: '支付失败',
-        description: err.message,
+        description: errorMessage,
         status: 'error',
-        duration: 5000,
+        duration: 8000,
         isClosable: true,
       });
 

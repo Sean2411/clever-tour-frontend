@@ -23,7 +23,7 @@ export default function PaymentCancel() {
 
   const handleRetryPayment = () => {
     if (booking_id) {
-      router.push(`/orders/${booking_id}/payment`);
+      router.push(`/payment/${booking_id}`);
     } else {
       router.push('/orders');
     }

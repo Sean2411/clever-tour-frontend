@@ -43,8 +43,15 @@ const PaymentPage = () => {
   const fetchBookingDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/bookings/${bookingId}`);
+      setError(null);
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
+      console.log('🔍 Fetching booking details for ID:', bookingId);
+      console.log('🔍 API URL:', `${API_BASE_URL}/api/bookings/${bookingId}`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`);
       const data = await response.json();
+
+      console.log('🔍 API Response:', { status: response.status, data });
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to fetch booking details');
@@ -150,7 +157,7 @@ const PaymentPage = () => {
             </Text>
           </VStack>
 
-          {booking && (
+          {booking ? (
             <Box p={6} border="1px solid" borderColor="gray.200" borderRadius="lg">
               <VStack spacing={6} align="stretch">
                 {/* 预订信息 */}
@@ -195,6 +202,19 @@ const PaymentPage = () => {
                   </Elements>
                 </Box>
               </VStack>
+            </Box>
+          ) : (
+            <Box p={6} border="1px solid" borderColor="gray.200" borderRadius="lg">
+              <Alert status="warning">
+                <AlertIcon />
+                <AlertTitle>预订信息未找到</AlertTitle>
+                <AlertDescription>
+                  无法加载预订信息，请检查预订编号是否正确。
+                </AlertDescription>
+              </Alert>
+              <Button mt={4} onClick={() => router.push('/orders')} w="100%">
+                查看我的订单
+              </Button>
             </Box>
           )}
         </VStack>
