@@ -65,7 +65,7 @@ jobs:
           --memory 1Gi \
           --cpu 1 \
           --max-instances 10 \
-          --set-env-vars NEXT_PUBLIC_API_URL=$API_URL
+          --set-env-vars NEXT_PUBLIC_API_URL=$API_URL,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.DEV_STRIPE_PUBLISHABLE_KEY }}
 
     - name: Get service URL
       run: |
