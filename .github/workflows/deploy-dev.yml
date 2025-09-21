@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: asia-east1
+  REGION: us-central1
   SERVICE_NAME: clever-tour-frontend-dev
   API_URL: https://api-dev.clever-tour.com
   REPOSITORY: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/clever-tour-frontend
@@ -68,6 +68,22 @@ jobs:
           --max-instances 10 \
           --set-env-vars NEXT_PUBLIC_API_URL=$API_URL,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.DEV_STRIPE_PUBLISHABLE_KEY }}
 
+    - name: Map custom domain
+      run: |
+        # 检查域名映射是否已存在
+        if gcloud beta run domain-mappings describe dev.clever-tour.com --region=$REGION --quiet 2>/dev/null; then
+          echo "Domain mapping already exists, updating..."
+          gcloud beta run domain-mappings update dev.clever-tour.com \
+            --service $SERVICE_NAME \
+            --region $REGION
+        else
+          echo "Creating new domain mapping..."
+          gcloud beta run domain-mappings create \
+            --service $SERVICE_NAME \
+            --domain dev.clever-tour.com \
+            --region $REGION
+        fi
+
     - name: Get service URL
       run: |
         SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format='value(status.url)')
@@ -93,12 +109,13 @@ jobs:
           
           **Status:** ✅ Successfully deployed
           **Environment:** Development
-          **URL:** ${{ env.SERVICE_URL }}
+          **Custom Domain:** https://dev.clever-tour.com
+          **Service URL:** ${{ env.SERVICE_URL }}
           **API:** ${{ env.API_URL }}
           **Commit:** \`${{ github.sha }}\`
           **Triggered by:** ${{ github.actor }}
           
-          The application has been deployed to the development environment.`;
+          The application has been deployed to the development environment and is accessible via the custom domain.`;
           
           if (botComment) {
             await github.rest.issues.updateComment({

@@ -12,7 +12,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: asia-east1
+  REGION: us-central1
   SERVICE_NAME: clever-tour-frontend-prod
   API_URL: https://api.clever-tour.com
   REPOSITORY: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/clever-tour-frontend

@@ -14,7 +14,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ['localhost:3000', 'localhost:5001'],
+      allowedOrigins: ['localhost:3000', 'localhost:5001', 'dev.clever-tour.com'],
     },
   },
   async rewrites() {
