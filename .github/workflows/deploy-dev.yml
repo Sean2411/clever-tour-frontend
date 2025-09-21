@@ -68,14 +68,14 @@ jobs:
           --max-instances 10 \
           --set-env-vars NEXT_PUBLIC_API_URL=$API_URL,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.DEV_STRIPE_PUBLISHABLE_KEY }}
 
+    - name: Install gcloud beta components
+      run: gcloud components install beta --quiet
+
     - name: Map custom domain
       run: |
         # 检查域名映射是否已存在
-        if gcloud beta run domain-mappings describe dev.clever-tour.com --region=$REGION --quiet 2>/dev/null; then
-          echo "Domain mapping already exists, updating..."
-          gcloud beta run domain-mappings update dev.clever-tour.com \
-            --service $SERVICE_NAME \
-            --region $REGION
+        if gcloud beta run domain-mappings describe --domain=dev.clever-tour.com --region=$REGION --quiet 2>/dev/null; then
+          echo "Domain mapping already exists, no update needed"
         else
           echo "Creating new domain mapping..."
           gcloud beta run domain-mappings create \

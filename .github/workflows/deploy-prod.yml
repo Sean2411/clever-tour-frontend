@@ -82,6 +82,22 @@ jobs:
           --max-instances 20 \
           --set-env-vars NEXT_PUBLIC_API_URL=$API_URL,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.PROD_STRIPE_PUBLISHABLE_KEY }}
 
+    - name: Install gcloud beta components
+      run: gcloud components install beta --quiet
+
+    - name: Map custom domain
+      run: |
+        # 检查域名映射是否已存在
+        if gcloud beta run domain-mappings describe --domain=clever-tour.com --region=$REGION --quiet 2>/dev/null; then
+          echo "Domain mapping already exists, no update needed"
+        else
+          echo "Creating new domain mapping..."
+          gcloud beta run domain-mappings create \
+            --service $SERVICE_NAME \
+            --domain clever-tour.com \
+            --region $REGION
+        fi
+
     - name: Get service URL
       run: |
         SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format='value(status.url)')
@@ -129,12 +145,13 @@ jobs:
           
           **Status:** ✅ Successfully deployed
           **Environment:** Production
-          **URL:** ${{ env.SERVICE_URL }}
+          **Custom Domain:** https://clever-tour.com
+          **Service URL:** ${{ env.SERVICE_URL }}
           **API:** ${{ env.API_URL }}
           **Commit:** \`${{ github.sha }}\`
           **Triggered by:** ${{ github.actor }}
           
-          The application has been deployed to the production environment.`;
+          The application has been deployed to the production environment and is accessible via the custom domain.`;
           
           if (botComment) {
             await github.rest.issues.updateComment({
