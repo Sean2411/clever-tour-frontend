@@ -25,8 +25,10 @@ import Head from 'next/head';
 import mongoose from 'mongoose';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { useTranslation } from 'react-i18next';
 
 export default function AttractionsList() {
+  const { t } = useTranslation();
   const [attractions, setAttractions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,14 +39,15 @@ export default function AttractionsList() {
   const router = useRouter();
   const toast = useToast();
 
+  // Categories with translation
   const categories = [
-    'All',
-    'Natural Landscape',
-    'Historical Landmark',
-    'Theme Park',
-    'Museum',
-    'Cultural Site',
-    'Other'
+    { value: '', label: t('attractions.all') },
+    { value: 'Natural Landscape', label: t('attractions.naturalLandscape') },
+    { value: 'Historical Landmark', label: t('attractions.historicalLandmark') },
+    { value: 'Theme Park', label: t('attractions.themePark') },
+    { value: 'Museum', label: t('attractions.museum') },
+    { value: 'Cultural Site', label: t('attractions.culturalSite') },
+    { value: 'Other', label: t('attractions.other') }
   ];
 
   const fetchAttractions = async () => {
@@ -122,8 +125,8 @@ export default function AttractionsList() {
   return (
     <>
       <Head>
-        <title>Attractions List - Clever Tour</title>
-        <meta name="description" content="Browse our curated selection of tourist attractions" />
+        <title>{t('attractions.title')} - Clever Tour</title>
+        <meta name="description" content={t('attractions.metaDescription')} />
       </Head>
 
       <Navbar />
@@ -135,38 +138,39 @@ export default function AttractionsList() {
               mb={{ base: 2, md: 4 }}
               textAlign={{ base: "center", md: "left" }}
             >
-              Explore Attractions
+              {t('attractions.exploreAttractions')}
             </Heading>
             <Text 
               color="gray.600"
               fontSize={{ base: "sm", md: "md" }}
               textAlign={{ base: "center", md: "left" }}
             >
-              Discover amazing tourist destinations and exciting experiences
+              {t('attractions.discoverDestinations')}
             </Text>
           </Box>
 
           <Box as="form" onSubmit={handleSearch}>
             <Stack direction={{ base: 'column', md: 'row' }} spacing={{ base: 3, md: 4 }}>
               <Input
-                placeholder="Search attractions..."
+                placeholder={t('attractions.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 size={{ base: "md", md: "lg" }}
                 fontSize={{ base: "sm", md: "md" }}
               />
               <Select
-                placeholder="Select category"
+                placeholder={t('attractions.selectCategory')}
                 value={category}
                 onChange={handleCategoryChange}
                 width={{ base: '100%', md: '200px' }}
                 size={{ base: "md", md: "lg" }}
                 fontSize={{ base: "sm", md: "md" }}
               >
-                <option value="">All Categories</option>
-                <option value="Natural Landscape">Natural Landscape</option>
-                <option value="Historical Landmark">Historical Landmark</option>
-                <option value="National Park">National Park</option>
+                {categories.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
               </Select>
               <Button 
                 type="submit" 
@@ -174,7 +178,7 @@ export default function AttractionsList() {
                 size={{ base: "md", md: "lg" }}
                 width={{ base: "100%", md: "auto" }}
               >
-                Search
+                {t('common.search')}
               </Button>
             </Stack>
           </Box>
@@ -185,12 +189,12 @@ export default function AttractionsList() {
             <Box textAlign="center" py={10}>
               <Text color="red.500">{error}</Text>
               <Button mt={4} onClick={() => fetchAttractions()}>
-                Retry
+                {t('common.retry')}
               </Button>
             </Box>
           ) : attractions.length === 0 ? (
             <Box textAlign="center" py={10}>
-              <Text>No attractions found</Text>
+              <Text>{t('attractions.noAttractionsFound')}</Text>
             </Box>
           ) : (
             <>
@@ -249,7 +253,7 @@ export default function AttractionsList() {
                         </VStack>
                         <VStack align="end" spacing={1}>
                           <Text color="gray.500" fontSize={{ base: "xs", md: "sm" }}>
-                            Rating
+                            {t('attractions.rating')}
                           </Text>
                           <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>
                             {attraction.rating} / 5
@@ -265,7 +269,7 @@ export default function AttractionsList() {
                           router.push(`/attractions/${attraction.attractionId}`);
                         }}
                       >
-                        View Details
+                        {t('attractions.viewDetails')}
                       </Button>
                     </Box>
                   </Box>
@@ -280,20 +284,20 @@ export default function AttractionsList() {
                       isDisabled={page === 1}
                       size={{ base: "sm", md: "md" }}
                     >
-                      Previous
+                      {t('common.previous')}
                     </Button>
                     <Text 
                       fontSize={{ base: "sm", md: "md" }}
                       px={{ base: 2, md: 4 }}
                     >
-                      Page {page} of {totalPages}
+                      {t('common.page')} {page} {t('common.of')} {totalPages}
                     </Text>
                     <Button
                       onClick={() => handlePageChange(page + 1)}
                       isDisabled={page === totalPages}
                       size={{ base: "sm", md: "md" }}
                     >
-                      Next
+                      {t('common.next')}
                     </Button>
                   </HStack>
                 </Flex>

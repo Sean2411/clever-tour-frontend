@@ -23,8 +23,11 @@ import { SearchIcon, StarIcon } from '@chakra-ui/icons';
 import Head from 'next/head';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { useTranslation } from 'react-i18next';
+import { useTourTranslation } from '../../hooks/useTourTranslation';
 
 export default function ToursList() {
+  const { t, i18n } = useTranslation();
   const [tours, setTours] = useState([]);
   const [toursWithImages, setToursWithImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,21 +40,43 @@ export default function ToursList() {
   const router = useRouter();
   const toast = useToast();
 
+  // 使用翻译hook
+  const { translatedTours, loading: translationLoading } = useTourTranslation(tours);
+  
+  // 合并翻译后的数据和图片数据
+  const [finalTours, setFinalTours] = useState([]);
+
+  // 合并翻译后的数据和图片数据
+  useEffect(() => {
+    if (translatedTours.length > 0 && toursWithImages.length > 0) {
+      const mergedTours = translatedTours.map(translatedTour => {
+        const tourWithImage = toursWithImages.find(tour => tour.id === translatedTour.id);
+        return {
+          ...translatedTour,
+          primaryImageUrl: tourWithImage?.primaryImageUrl || translatedTour.image
+        };
+      });
+      setFinalTours(mergedTours);
+    }
+  }, [translatedTours, toursWithImages]);
+
+  // Categories with translation
   const categories = [
-    'All',
-    'City Sightseeing',
-    'Natural Landscape',
-    'Historical Culture',
-    'Theme Park',
-    'Food Tour',
-    'Shopping Tour'
+    { value: '', label: t('tours.all') },
+    { value: 'City Sightseeing', label: t('tours.citySightseeing') },
+    { value: 'Natural Landscape', label: t('tours.naturalLandscape') },
+    { value: 'Historical Culture', label: t('tours.historicalCulture') },
+    { value: 'Theme Park', label: t('tours.themePark') },
+    { value: 'Food Tour', label: t('tours.foodTour') },
+    { value: 'Shopping Tour', label: t('tours.shoppingTour') }
   ];
 
+  // Durations with translation
   const durations = [
-    'All',
-    '1-3 Days',
-    '4-7 Days',
-    '8+ Days'
+    { value: '', label: t('tours.all') },
+    { value: '1-3 Days', label: t('tours.duration1to3') },
+    { value: '4-7 Days', label: t('tours.duration4to7') },
+    { value: '8+ Days', label: t('tours.duration8plus') }
   ];
 
   // 获取tour的主图
@@ -78,7 +103,7 @@ export default function ToursList() {
       setLoading(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
       const response = await fetch(
-        `${apiUrl}/api/tours?page=${page}&search=${searchTerm}&category=${category}&duration=${duration}`
+        `${apiUrl}/api/tours?page=${page}&search=${searchTerm}&category=${category}&duration=${duration}&language=${i18n.language}`
       );
       const data = await response.json();
       
@@ -160,74 +185,74 @@ export default function ToursList() {
   return (
     <>
       <Head>
-        <title>Tours List - Clever Tour</title>
-        <meta name="description" content="Browse our curated selection of tours" />
+        <title>{t('tours.title')} - Clever Tour</title>
+        <meta name="description" content={t('tours.metaDescription')} />
       </Head>
 
       <Navbar />
       <Container maxW="container.xl" py={8}>
         <Stack spacing={8}>
           <Box>
-            <Heading mb={4}>Explore Tours</Heading>
+            <Heading mb={4}>{t('tours.exploreTours')}</Heading>
             <Text color="gray.600">
-              Discover amazing travel experiences and unforgettable journeys
+              {t('tours.discoverExperiences')}
             </Text>
           </Box>
 
           <Box as="form" onSubmit={handleSearch}>
             <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
               <Input
-                placeholder="Search tours..."
+                placeholder={t('tours.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <Select
-                placeholder="Select category"
+                placeholder={t('tours.selectCategory')}
                 value={category}
                 onChange={handleCategoryChange}
                 width={{ base: '100%', md: '200px' }}
               >
                 {categories.map((cat) => (
-                  <option key={cat} value={cat === 'All' ? '' : cat}>
-                    {cat}
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
                   </option>
                 ))}
               </Select>
               <Select
-                placeholder="Duration"
+                placeholder={t('tours.selectDuration')}
                 value={duration}
                 onChange={handleDurationChange}
                 width={{ base: '100%', md: '200px' }}
               >
                 {durations.map((dur) => (
-                  <option key={dur} value={dur === 'All' ? '' : dur}>
-                    {dur}
+                  <option key={dur.value} value={dur.value}>
+                    {dur.label}
                   </option>
                 ))}
               </Select>
               <Button type="submit" colorScheme="blue">
-                Search
+                {t('common.search')}
               </Button>
             </Stack>
           </Box>
 
-          {loading ? (
+          {loading || translationLoading ? (
             renderSkeleton()
           ) : error ? (
             <Box textAlign="center" py={10}>
               <Text color="red.500">{error}</Text>
               <Button mt={4} onClick={() => fetchTours()}>
-                Retry
+                {t('common.retry')}
               </Button>
             </Box>
-          ) : toursWithImages.length === 0 ? (
+          ) : finalTours.length === 0 ? (
             <Box textAlign="center" py={10}>
-              <Text>No tours found</Text>
+              <Text>{t('tours.noToursFound')}</Text>
             </Box>
           ) : (
             <>
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-                {toursWithImages.map((tour) => (
+                {finalTours.map((tour) => (
                   <Box
                     key={tour.id}
                     borderWidth="1px"
@@ -259,7 +284,7 @@ export default function ToursList() {
                       <Flex justify="space-between" align="center">
                         <VStack align="start" spacing={1}>
                           <Text color="gray.500" fontSize="sm">
-                            Price
+                            {t('tours.price')}
                           </Text>
                           <HStack>
                             <Text fontWeight="bold" color="blue.500">
@@ -272,7 +297,7 @@ export default function ToursList() {
                         </VStack>
                         <VStack align="end" spacing={1}>
                           <Text color="gray.500" fontSize="sm">
-                            Rating
+                            {t('tours.rating')}
                           </Text>
                           <HStack>
                             <StarIcon color="yellow.400" />
@@ -294,16 +319,16 @@ export default function ToursList() {
                       onClick={() => handlePageChange(page - 1)}
                       isDisabled={page === 1}
                     >
-                      Previous
+                      {t('common.previous')}
                     </Button>
                     <Text>
-                      Page {page} of {totalPages}
+                      {t('common.page')} {page} {t('common.of')} {totalPages}
                     </Text>
                     <Button
                       onClick={() => handlePageChange(page + 1)}
                       isDisabled={page === totalPages}
                     >
-                      Next
+                      {t('common.next')}
                     </Button>
                   </HStack>
                 </Flex>

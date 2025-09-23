@@ -1,6 +1,7 @@
 import { ChakraProvider, extendTheme, Box, Flex } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import '../styles/responsive.css';
+import '../lib/i18n'; // 初始化i18n
 
 // 扩展主题以包含Portal配置
 const theme = extendTheme({

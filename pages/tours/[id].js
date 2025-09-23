@@ -24,4 +24,4 @@ export default function TourRedirect() {
       正在跳转到新的页面...
     </div>
   );
-}
+} 

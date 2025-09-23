@@ -23,6 +23,8 @@ import {
   VStack,
   Divider,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 import {
   HamburgerIcon,
   CloseIcon,
@@ -34,6 +36,7 @@ import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const { isOpen, onToggle } = useDisclosure();
   const [user, setUser] = useState(null);
   const router = useRouter();
@@ -106,11 +109,14 @@ export default function Navbar() {
           gap={{ base: 2, lg: 4 }}
         >
           <NextLink href="/tours" passHref>
-            <Link px={3} py={2} _hover={{ color: 'blue.500' }}>Tours</Link>
+            <Link px={3} py={2} _hover={{ color: 'blue.500' }}>{t('navigation.tours')}</Link>
           </NextLink>
           <NextLink href="/attractions" passHref>
-            <Link px={3} py={2} _hover={{ color: 'blue.500' }}>Attractions</Link>
+            <Link px={3} py={2} _hover={{ color: 'blue.500' }}>{t('navigation.attractions')}</Link>
           </NextLink>
+          
+          {/* Language Switcher */}
+          <LanguageSwitcher />
           
           {user ? (
             <Menu>
@@ -136,10 +142,10 @@ export default function Navbar() {
               </MenuButton>
               <MenuList>
                 <MenuItem onClick={() => router.push('/profile')}>
-                  Profile
+                  {t('navigation.profile')}
                 </MenuItem>
                 <MenuItem onClick={() => router.push('/orders')}>
-                  My Orders
+                  {t('navigation.myOrders')}
                 </MenuItem>
                 
                 {/* Admin-only menu items */}
@@ -147,25 +153,25 @@ export default function Navbar() {
                   <>
                     <MenuDivider />
                     <MenuItem onClick={() => router.push('/admin')}>
-                      Admin Dashboard
+                      {t('navigation.adminDashboard')}
                     </MenuItem>
                     <MenuItem onClick={() => router.push('/admin/manageUser')}>
-                      Manage Users
+                      {t('navigation.manageUsers')}
                     </MenuItem>
                     <MenuItem onClick={() => router.push('/admin/manageTours')}>
-                      Manage Tours
+                      {t('navigation.manageTours')}
                     </MenuItem>
                     <MenuItem onClick={() => router.push('/admin/manageAttractions')}>
-                      Manage Attractions
+                      {t('navigation.manageAttractions')}
                     </MenuItem>
                     <MenuItem onClick={() => router.push('/admin/bookings')}>
-                      Manage Bookings
+                      {t('navigation.manageBookings')}
                     </MenuItem>
                     <MenuItem onClick={() => router.push('/admin/image-management')}>
-                      Manage Image
+                      {t('navigation.manageImages')}
                     </MenuItem>
                     <MenuItem onClick={() => router.push('/admin/reports')}>
-                      Reports
+                      {t('navigation.reports')}
                     </MenuItem>
                   </>
                 )}
@@ -175,16 +181,16 @@ export default function Navbar() {
                   <>
                     <MenuDivider />
                     <MenuItem onClick={() => router.push('/agent/bookings')}>
-                      Manage Bookings
+                      {t('navigation.manageBookings')}
                     </MenuItem>
                     <MenuItem onClick={() => router.push('/agent/reports')}>
-                      View Reports
+                      {t('navigation.viewReports')}
                     </MenuItem>
                   </>
                 )}
                 
                 <MenuDivider />
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>{t('navigation.logout')}</MenuItem>
               </MenuList>
             </Menu>
           ) : (
@@ -193,7 +199,7 @@ export default function Navbar() {
               onClick={handleLogin}
               size={{ base: 'sm', md: 'md' }}
             >
-              Login
+              {t('navigation.login')}
             </Button>
           )}
         </Flex>
@@ -227,7 +233,7 @@ export default function Navbar() {
                 _hover={{ bg: 'gray.100' }}
                 onClick={onToggle}
               >
-                Tours
+                {t('navigation.tours')}
               </Link>
             </NextLink>
             <NextLink href="/attractions" passHref>
@@ -237,7 +243,7 @@ export default function Navbar() {
                 _hover={{ bg: 'gray.100' }}
                 onClick={onToggle}
               >
-                Attractions
+                {t('navigation.attractions')}
               </Link>
             </NextLink>
             
@@ -254,7 +260,7 @@ export default function Navbar() {
                     onToggle();
                   }}
                 >
-                  Profile
+                  {t('navigation.profile')}
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -264,7 +270,7 @@ export default function Navbar() {
                     onToggle();
                   }}
                 >
-                  My Orders
+                  {t('navigation.myOrders')}
                 </Button>
                 
                 {/* Admin mobile menu items */}
@@ -282,7 +288,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Dashboard
+                      {t('navigation.adminDashboard')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -292,7 +298,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Manage Users
+                      {t('navigation.manageUsers')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -302,7 +308,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Manage Tours
+                      {t('navigation.manageTours')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -312,7 +318,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Manage Attractions
+                      {t('navigation.manageAttractions')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -322,7 +328,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Manage Bookings
+                      {t('navigation.manageBookings')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -332,7 +338,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Manage Image
+                      {t('navigation.manageImages')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -342,7 +348,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Reports
+                      {t('navigation.reports')}
                     </Button>
                   </>
                 )}
@@ -362,7 +368,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      Manage Bookings
+                      {t('navigation.manageBookings')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -372,7 +378,7 @@ export default function Navbar() {
                         onToggle();
                       }}
                     >
-                      View Reports
+                      {t('navigation.viewReports')}
                     </Button>
                   </>
                 )}
@@ -387,7 +393,7 @@ export default function Navbar() {
                     onToggle();
                   }}
                 >
-                  Logout
+                  {t('navigation.logout')}
                 </Button>
               </VStack>
             ) : (
@@ -399,7 +405,7 @@ export default function Navbar() {
                 }}
                 size="sm"
               >
-                Login
+                {t('navigation.login')}
               </Button>
             )}
           </VStack>

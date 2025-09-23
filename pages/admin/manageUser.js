@@ -47,8 +47,10 @@ import { AdminOnly } from '../../components/ProtectedRoute';
 import { api } from '../../lib/api';
 import AdminCard from '../../components/AdminCard';
 import ResponsiveGrid from '../../components/ResponsiveGrid';
+import { useTranslation } from 'react-i18next';
 
 export default function ManageUsers() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -264,8 +266,8 @@ export default function ManageUsers() {
   return (
     <AdminOnly>
       <Head>
-        <title>Manage Users - Clever Tour</title>
-        <meta name="description" content="Manage users for administrators" />
+        <title>{t('admin.manageUsers')} - Clever Tour</title>
+        <meta name="description" content={t('admin.manageUsersDescription')} />
       </Head>
 
       <Layout>
@@ -276,7 +278,7 @@ export default function ManageUsers() {
               size={{ base: "lg", md: "xl" }}
               textAlign={{ base: "center", md: "left" }}
             >
-              Manage Users
+              {t('admin.manageUsers')}
             </Heading>
             <Button 
               leftIcon={<AddIcon />} 
@@ -285,7 +287,7 @@ export default function ManageUsers() {
               size={{ base: "md", md: "lg" }}
               width={{ base: "100%", md: "auto" }}
             >
-              Add User
+              {t('admin.addUser')}
             </Button>
           </VStack>
 
@@ -293,7 +295,7 @@ export default function ManageUsers() {
           <Box>
             <HStack spacing={{ base: 2, md: 4 }}>
               <Input
-                placeholder="Search users by username, email, or role..."
+                placeholder={t('admin.searchUsers')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 size={{ base: "md", md: "lg" }}
@@ -345,55 +347,55 @@ export default function ManageUsers() {
         <Modal isOpen={isAddOpen} onClose={onAddClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Add New User</ModalHeader>
+            <ModalHeader>{t('admin.addNewUser')}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <VStack spacing={4}>
                 <FormControl isRequired>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>{t('admin.username')}</FormLabel>
                 <Input
                   value={newUser.username}
                   onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                  placeholder="Enter username"
+                  placeholder={t('admin.enterUsername')}
                 />
               </FormControl>
               <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t('admin.email')}</FormLabel>
                 <Input
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  placeholder="Enter email"
+                  placeholder={t('admin.enterEmail')}
                 />
               </FormControl>
               <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t('admin.password')}</FormLabel>
                 <Input
                   type="password"
                   value={newUser.password}
                   onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                  placeholder="Enter password"
+                  placeholder={t('admin.enterPassword')}
                 />
               </FormControl>
               <FormControl isRequired>
-                <FormLabel>Role</FormLabel>
+                <FormLabel>{t('admin.role')}</FormLabel>
                 <Select
                   value={newUser.role}
                   onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                 >
-                  <option value="member">Member</option>
-                  <option value="agent">Agent</option>
-                  <option value="admin">Admin</option>
+                  <option value="member">{t('admin.member')}</option>
+                  <option value="agent">{t('admin.agent')}</option>
+                  <option value="admin">{t('admin.admin')}</option>
                 </Select>
               </FormControl>
             </VStack>
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={onAddClose}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button colorScheme="blue" onClick={handleAddUser}>
-              Add User
+              {t('admin.addUser')}
             </Button>
           </ModalFooter>
         </ModalContent>

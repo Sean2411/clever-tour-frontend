@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -58,42 +59,46 @@ const pulse = keyframes`
   50% { transform: scale(1.05); }
 `;
 
-const features = [
-  {
-    id: 1,
-    title: 'Best Prices',
-    description: 'We offer the most competitive ticket prices',
-    icon: FaShieldAlt,
-    color: 'green',
-  },
-  {
-    id: 2,
-    title: 'Quick Booking',
-    description: 'Simple and fast booking process',
-    icon: FaClock,
-    color: 'blue',
-  },
-  {
-    id: 3,
-    title: 'Secure Payment',
-    description: 'Safe and reliable payment system',
-    icon: FaShieldAlt,
-    color: 'purple',
-  },
-  {
-    id: 4,
-    title: '24/7 Support',
-    description: 'Round-the-clock customer service support',
-    icon: FaHeadset,
-    color: 'orange',
-  },
-];
+// Features will be defined inside the component to use translation
 
 
 export default function Home() {
+  const { t } = useTranslation();
   const [tours, setTours] = useState([]);
   const [toursWithImages, setToursWithImages] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Features with translation - using useMemo to ensure translation is ready
+  const features = useMemo(() => [
+    {
+      id: 1,
+      title: t('features.bestPrices'),
+      description: t('features.bestPricesDesc'),
+      icon: FaShieldAlt,
+      color: 'green',
+    },
+    {
+      id: 2,
+      title: t('features.quickBooking'),
+      description: t('features.quickBookingDesc'),
+      icon: FaClock,
+      color: 'blue',
+    },
+    {
+      id: 3,
+      title: t('features.securePayment'),
+      description: t('features.securePaymentDesc'),
+      icon: FaShieldAlt,
+      color: 'purple',
+    },
+    {
+      id: 4,
+      title: t('features.customerSupport'),
+      description: t('features.customerSupportDesc'),
+      icon: FaHeadset,
+      color: 'orange',
+    },
+  ], [t]);
 
   // 获取tour的主图
   const getTourPrimaryImage = async (tourId) => {
@@ -234,7 +239,7 @@ export default function Home() {
                   fontSize="sm"
                   animation={`${fadeIn} 1s ease-out`}
                 >
-                  ✨ Discover Amazing Destinations
+                  ✨ {t('home.subtitle')}
                 </Badge>
                 
                 <Heading 
@@ -243,7 +248,7 @@ export default function Home() {
                   fontWeight="bold"
                   animation={`${slideIn} 1s ease-out 0.2s both`}
                 >
-                  Explore the World with{' '}
+                  {t('home.title')}{' '}
                   <Text as="span" bgGradient="linear(to-r, yellow.300, orange.400)" bgClip="text">
                     Clever Tour
                   </Text>
@@ -255,7 +260,7 @@ export default function Home() {
                   opacity="0.9"
                   animation={`${fadeIn} 1s ease-out 0.4s both`}
                 >
-                  Experience unforgettable adventures with our premium travel packages and exclusive deals
+                  {t('home.bestTravelExperience')}
                 </Text>
               </VStack>
 
@@ -275,7 +280,7 @@ export default function Home() {
                     transition="all 0.3s ease"
                     leftIcon={<Icon as={FaPlane} />}
                   >
-                    Explore Tours
+                    {t('home.exploreTours')}
                   </Button>
                 </Link>
                 <Link href="/attractions" passHref>
@@ -294,7 +299,7 @@ export default function Home() {
                     transition="all 0.3s ease"
                     leftIcon={<Icon as={FaMapMarkerAlt} />}
                   >
-                    View Attractions
+                    {t('home.viewAttractions')}
                   </Button>
                 </Link>
               </HStack>
@@ -322,10 +327,10 @@ export default function Home() {
                 bgGradient="linear(to-r, blue.600, purple.600)"
                 bgClip="text"
               >
-                Popular Destinations
+                {t('home.popularDestinations')}
               </Heading>
               <Text fontSize={{ base: 'md', md: 'lg' }} color="gray.600" maxW="600px">
-                Discover our most loved travel experiences and create memories that last a lifetime
+                {t('home.bestTravelExperience')}
               </Text>
             </VStack>
             {loading ? (
@@ -387,17 +392,17 @@ export default function Home() {
                   borderRadius="full"
                   fontSize="sm"
                 >
-                  ✨ Why Choose Us
+                  ✨ {t('home.whyChooseUs')}
                 </Badge>
                 <Heading 
                   size={{ base: 'lg', md: 'xl', lg: '2xl' }}
                   bgGradient="linear(to-r, blue.600, purple.600)"
                   bgClip="text"
                 >
-                  Experience the Difference
+                  {t('home.experienceDifference')}
                 </Heading>
                 <Text fontSize={{ base: 'md', md: 'lg' }} color="gray.600" maxW="600px">
-                  We&apos;re committed to providing you with the best travel experience possible
+                  {t('home.bestTravelExperience')}
                 </Text>
               </VStack>
               

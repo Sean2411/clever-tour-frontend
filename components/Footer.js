@@ -8,8 +8,10 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <Box
       bg={useColorModeValue('gray.50', 'gray.900')}
@@ -31,7 +33,7 @@ export default function Footer() {
           fontSize={{ base: 'sm', md: 'md' }}
           textAlign={{ base: 'center', md: 'left' }}
         >
-          © 2025 Clever Tour. All rights reserved
+          {t('footer.copyright')}
         </Text>
         <Stack 
           direction={{ base: 'column', sm: 'row' }} 
@@ -43,7 +45,7 @@ export default function Footer() {
               fontSize={{ base: 'sm', md: 'md' }}
               _hover={{ color: 'blue.500' }}
             >
-              About Us
+              {t('footer.aboutUs')}
             </Link>
           </NextLink>
           <NextLink href="/contact" passHref>
@@ -51,7 +53,7 @@ export default function Footer() {
               fontSize={{ base: 'sm', md: 'md' }}
               _hover={{ color: 'blue.500' }}
             >
-              Contact Us
+              {t('footer.contactUs')}
             </Link>
           </NextLink>
           <NextLink href="/terms" passHref>
@@ -59,7 +61,7 @@ export default function Footer() {
               fontSize={{ base: 'sm', md: 'md' }}
               _hover={{ color: 'blue.500' }}
             >
-              Terms of Service
+              {t('footer.termsOfService')}
             </Link>
           </NextLink>
           <NextLink href="/privacy" passHref>
@@ -67,7 +69,7 @@ export default function Footer() {
               fontSize={{ base: 'sm', md: 'md' }}
               _hover={{ color: 'blue.500' }}
             >
-              Privacy Policy
+              {t('footer.privacyPolicy')}
             </Link>
           </NextLink>
         </Stack>

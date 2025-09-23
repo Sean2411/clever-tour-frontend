@@ -65,49 +65,8 @@ const EntityImageUploader = ({
     onEntitySelect?.(entity);
   };
 
-  // 处理文件选择
-  const handleFileSelect = useCallback(async (files) => {
-    if (!selectedEntity) {
-      onError?.('请先选择要关联的对象');
-      return;
-    }
-
-    if (!files || files.length === 0) return;
-
-    const fileArray = Array.from(files);
-    
-    // 验证文件
-    for (const file of fileArray) {
-      if (!file.type.startsWith('image/')) {
-        onError?.('只支持图片文件');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        onError?.('文件大小不能超过 10MB');
-        return;
-      }
-    }
-
-    setUploading(true);
-    setUploadProgress(0);
-
-    try {
-      if (fileArray.length === 1) {
-        await uploadSingleFile(fileArray[0]);
-      } else {
-        await uploadMultipleFiles(fileArray);
-      }
-    } catch (error) {
-      console.error('上传失败:', error);
-      onError?.(error.message || '上传失败');
-    } finally {
-      setUploading(false);
-      setUploadProgress(0);
-    }
-  }, [selectedEntity, onUpload, onError]);
-
   // 单文件上传
-  const uploadSingleFile = async (file) => {
+  const uploadSingleFile = useCallback(async (file) => {
     const formData = new FormData();
     formData.append('image', file);
     formData.append('entityType', entityType);
@@ -145,10 +104,10 @@ const EntityImageUploader = ({
       setPreviews([]);
       throw error;
     }
-  };
+  }, [selectedEntity, entityType, onUpload]);
 
   // 多文件上传
-  const uploadMultipleFiles = async (files) => {
+  const uploadMultipleFiles = useCallback(async (files) => {
     const formData = new FormData();
     files.forEach(file => {
       formData.append('images', file);
@@ -195,7 +154,48 @@ const EntityImageUploader = ({
       setPreviews([]);
       throw error;
     }
-  };
+  }, [selectedEntity, entityType, onUpload]);
+
+  // 处理文件选择
+  const handleFileSelect = useCallback(async (files) => {
+    if (!selectedEntity) {
+      onError?.('请先选择要关联的对象');
+      return;
+    }
+
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    
+    // 验证文件
+    for (const file of fileArray) {
+      if (!file.type.startsWith('image/')) {
+        onError?.('只支持图片文件');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        onError?.('文件大小不能超过 10MB');
+        return;
+      }
+    }
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      if (fileArray.length === 1) {
+        await uploadSingleFile(fileArray[0]);
+      } else {
+        await uploadMultipleFiles(fileArray);
+      }
+    } catch (error) {
+      console.error('上传失败:', error);
+      onError?.(error.message || '上传失败');
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  }, [selectedEntity, onUpload, onError, uploadSingleFile, uploadMultipleFiles]);
 
   // 处理拖拽上传
   const handleDragOver = useCallback((e) => {
