@@ -151,7 +151,7 @@ export default function Home() {
                     description={tour.description}
                     image={tour.image}
                     price={tour.price}
-                    href={`/tours/${tour.id}`}
+                    href={`/tours/detail/${tour.id}`}
                   >
                     <Button 
                       colorScheme="blue" 

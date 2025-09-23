@@ -26,6 +26,7 @@ import Footer from '../../components/Footer';
 
 export default function ToursList() {
   const [tours, setTours] = useState([]);
+  const [toursWithImages, setToursWithImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,10 +54,28 @@ export default function ToursList() {
     '8+ Days'
   ];
 
+  // 获取tour的主图
+  const getTourPrimaryImage = async (tourId) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${apiUrl}/api/upload/entity/tour/${tourId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        const uploadedImages = data.data.images.filter(img => typeof img === 'object' && img.fileName);
+        const primaryImage = uploadedImages.find(img => img.isPrimary);
+        return primaryImage ? primaryImage.original.url : null;
+      }
+    } catch (error) {
+      console.warn(`Failed to get images for tour ${tourId}:`, error);
+    }
+    return null;
+  };
+
   const fetchTours = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-dev.clever-tour.com';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
       const response = await fetch(
         `${apiUrl}/api/tours?page=${page}&search=${searchTerm}&category=${category}&duration=${duration}`
       );
@@ -66,9 +85,23 @@ export default function ToursList() {
         throw new Error(data.message || 'Failed to get tours list');
       }
 
-      setTours(data.tours || []);
+      const toursData = data.tours || [];
+      setTours(toursData);
       setTotalPages(data.totalPages || 1);
       setError(null);
+
+      // 获取每个tour的主图
+      const toursWithImagesData = await Promise.all(
+        toursData.map(async (tour) => {
+          const primaryImageUrl = await getTourPrimaryImage(tour.id);
+          return {
+            ...tour,
+            primaryImageUrl: primaryImageUrl || tour.image // 如果没有主图，使用原有图片
+          };
+        })
+      );
+      
+      setToursWithImages(toursWithImagesData);
     } catch (err) {
       console.error('Failed to get tours list:', err);
       setError(err.message);
@@ -186,26 +219,26 @@ export default function ToursList() {
                 Retry
               </Button>
             </Box>
-          ) : tours.length === 0 ? (
+          ) : toursWithImages.length === 0 ? (
             <Box textAlign="center" py={10}>
               <Text>No tours found</Text>
             </Box>
           ) : (
             <>
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-                {tours.map((tour) => (
+                {toursWithImages.map((tour) => (
                   <Box
                     key={tour.id}
                     borderWidth="1px"
                     borderRadius="lg"
                     overflow="hidden"
                     cursor="pointer"
-                    onClick={() => router.push(`/tours/${tour.id}`)}
+                    onClick={() => router.push(`/tours/detail/${tour.id}`)}
                     _hover={{ transform: 'translateY(-4px)', shadow: 'lg' }}
                     transition="all 0.2s"
                   >
                     <Image
-                      src={tour.image}
+                      src={tour.primaryImageUrl || tour.image}
                       alt={tour.name}
                       height="200px"
                       width="100%"

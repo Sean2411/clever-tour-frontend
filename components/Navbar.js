@@ -161,6 +161,9 @@ export default function Navbar() {
                     <MenuItem onClick={() => router.push('/admin/bookings')}>
                       Manage Bookings
                     </MenuItem>
+                    <MenuItem onClick={() => router.push('/admin/image-management')}>
+                      Manage Image
+                    </MenuItem>
                     <MenuItem onClick={() => router.push('/admin/reports')}>
                       Reports
                     </MenuItem>
@@ -320,6 +323,16 @@ export default function Navbar() {
                       }}
                     >
                       Manage Bookings
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      justifyContent="flex-start"
+                      onClick={() => {
+                        router.push('/admin/image-management');
+                        onToggle();
+                      }}
+                    >
+                      Manage Image
                     </Button>
                     <Button 
                       variant="ghost" 

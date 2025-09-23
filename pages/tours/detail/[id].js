@@ -53,6 +53,7 @@ import Head from 'next/head';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import ProtectedRoute from '../../../components/ProtectedRoute';
+import { ImageGallery } from '../../../components/ResponsiveImage';
 
 // 动态导入可能引起SSR问题的组件
 const DynamicTabs = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.Tabs })), { ssr: false });
@@ -71,6 +72,8 @@ const DynamicModalCloseButton = dynamic(() => import('@chakra-ui/react').then(mo
 
 function TourDetailContent() {
   const [tour, setTour] = useState(null);
+  const [images, setImages] = useState([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -96,7 +99,9 @@ function TourDetailContent() {
   const fetchTour = async () => {
     try {
       setLoading(true);
-      const apiUrl = 'http://smart-tourist-backend-alb-149914387.us-east-1.elb.amazonaws.com';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+      
+      // 获取旅游路线基本信息
       const response = await fetch(`${apiUrl}/api/tours/${id}`);
       const data = await response.json();
 
@@ -105,6 +110,56 @@ function TourDetailContent() {
       }
 
       setTour(data);
+      
+      // 获取关联图片
+      try {
+        const imagesResponse = await fetch(`${apiUrl}/api/upload/entity/tour/${id}`);
+        const imagesData = await imagesResponse.json();
+        
+        if (imagesData.success) {
+          const allImages = imagesData.data.images;
+          // 过滤出上传的图片对象（排除字符串URL）
+          const uploadedImages = allImages.filter(img => typeof img === 'object' && img.fileName);
+          
+          // 如果有上传的图片，使用上传的图片；否则使用原有的图片
+          if (uploadedImages.length > 0) {
+            setImages(uploadedImages);
+            // 找到主图的索引，如果没有主图则使用第一张
+            const primaryIndex = uploadedImages.findIndex(img => img.isPrimary);
+            setSelectedImageIndex(primaryIndex >= 0 ? primaryIndex : 0);
+          } else {
+            // 如果没有上传的图片，创建一个包含原有图片的对象
+            const fallbackImage = {
+              fileName: 'default',
+              original: { url: data.image },
+              thumbnails: [
+                { size: 'thumbnail', url: data.image },
+                { size: 'medium', url: data.image },
+                { size: 'large', url: data.image }
+              ],
+              isPrimary: true
+            };
+            setImages([fallbackImage]);
+            setSelectedImageIndex(0);
+          }
+        }
+      } catch (imageError) {
+        console.warn('Failed to fetch images:', imageError);
+        // 图片获取失败时使用原有图片
+        const fallbackImage = {
+          fileName: 'default',
+          original: { url: data.image },
+          thumbnails: [
+            { size: 'thumbnail', url: data.image },
+            { size: 'medium', url: data.image },
+            { size: 'large', url: data.image }
+          ],
+          isPrimary: true
+        };
+        setImages([fallbackImage]);
+        setSelectedImageIndex(0);
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Failed to get tour details:', err);
@@ -223,6 +278,10 @@ function TourDetailContent() {
     return null;
   }
 
+  // 获取当前选中的图片
+  const currentImage = images[selectedImageIndex];
+  const mainImageSrc = currentImage ? currentImage.original.url : tour.image;
+
   return (
     <>
       <Head>
@@ -235,15 +294,80 @@ function TourDetailContent() {
         <Grid templateColumns={{ base: '1fr', lg: '2fr 1fr' }} gap={8}>
           <GridItem>
             <VStack spacing={8} align="stretch">
+              {/* 主图和副图区域 */}
               <Box>
-                <Image
-                  src={tour.image}
-                  alt={tour.name}
-                  borderRadius="lg"
-                  width="100%"
-                  height="400px"
-                  objectFit="cover"
-                />
+                <Grid templateColumns={{ base: '1fr', md: '3fr 1fr' }} gap={4}>
+                  {/* 主图区域 */}
+                  <GridItem>
+                    <Image
+                      src={mainImageSrc}
+                      alt={tour.name}
+                      borderRadius="lg"
+                      width="100%"
+                      height="400px"
+                      objectFit="cover"
+                      cursor="pointer"
+                      _hover={{ transform: 'scale(1.02)' }}
+                      transition="transform 0.2s"
+                    />
+                  </GridItem>
+                  
+                  {/* 副图区域 */}
+                  {images.length > 1 && (
+                    <GridItem>
+                      <VStack spacing={2} align="stretch">
+                        {images.slice(0, 4).map((image, index) => (
+                          <Box
+                            key={index}
+                            position="relative"
+                            cursor="pointer"
+                            onClick={() => setSelectedImageIndex(index)}
+                            borderRadius="md"
+                            overflow="hidden"
+                            border={selectedImageIndex === index ? "3px solid" : "2px solid"}
+                            borderColor={selectedImageIndex === index ? "blue.500" : "gray.200"}
+                            _hover={{ borderColor: "blue.300" }}
+                            transition="all 0.2s"
+                          >
+                            <Image
+                              src={image.thumbnails.find(t => t.size === 'thumbnail')?.url || image.original.url}
+                              alt={`${tour.name} 图片 ${index + 1}`}
+                              width="100%"
+                              height="90px"
+                              objectFit="cover"
+                            />
+                            {image.isPrimary && (
+                              <Box
+                                position="absolute"
+                                top="2px"
+                                right="2px"
+                                bg="blue.500"
+                                color="white"
+                                px={1}
+                                py={0.5}
+                                borderRadius="sm"
+                                fontSize="xs"
+                                fontWeight="bold"
+                              >
+                                主图
+                              </Box>
+                            )}
+                          </Box>
+                        ))}
+                        {images.length > 4 && (
+                          <Box
+                            textAlign="center"
+                            py={2}
+                            color="gray.500"
+                            fontSize="sm"
+                          >
+                            +{images.length - 4} 更多图片
+                          </Box>
+                        )}
+                      </VStack>
+                    </GridItem>
+                  )}
+                </Grid>
               </Box>
 
               <Box>
