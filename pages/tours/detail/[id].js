@@ -358,10 +358,16 @@ function TourDetailContent() {
                           <Box
                             textAlign="center"
                             py={2}
-                            color="gray.500"
-                            fontSize="sm"
                           >
-                            +{images.length - 4} 更多图片
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              colorScheme="blue"
+                              onClick={() => setSelectedImageIndex(4)}
+                              _hover={{ bg: "blue.50" }}
+                            >
+                              +{images.length - 4} 更多图片
+                            </Button>
                           </Box>
                         )}
                       </VStack>

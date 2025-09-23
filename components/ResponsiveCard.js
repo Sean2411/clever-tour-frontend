@@ -35,73 +35,80 @@ const ResponsiveCard = ({
       cursor="pointer"
       _hover={{ 
         transform: 'translateY(-4px)', 
-        shadow: 'lg',
-        transition: 'all 0.2s'
+        shadow: 'xl',
+        transition: 'all 0.3s ease'
       }}
-      transition="all 0.2s"
+      transition="all 0.3s ease"
       bg="white"
+      height="100%"
+      display="flex"
+      flexDirection="column"
       {...props}
     >
-      {/* Image Container */}
-      <Box position="relative" height={{ base: '200px', md: '250px', lg: '200px' }}>
+      {/* Image Container - Fixed Height */}
+      <Box position="relative" height="220px" flexShrink={0}>
         <Image
           src={image}
           alt={title}
           width="100%"
           height="100%"
           objectFit="cover"
-          fallbackSrc="https://via.placeholder.com/400x200?text=No+Image"
+          fallbackSrc="https://via.placeholder.com/400x220?text=No+Image"
         />
         {badge && (
           <Badge
             position="absolute"
-            top={2}
-            right={2}
+            top={3}
+            right={3}
             colorScheme={badgeColor}
             borderRadius="full"
-            px={2}
+            px={3}
             py={1}
-            fontSize={{ base: 'xs', md: 'sm' }}
+            fontSize="sm"
+            fontWeight="medium"
           >
             {badge}
           </Badge>
         )}
       </Box>
 
-      {/* Content */}
-      <Box p={{ base: 4, md: 6 }}>
-        <VStack spacing={3} align="stretch">
+      {/* Content - Flexible Height */}
+      <Box p={6} flex="1" display="flex" flexDirection="column">
+        <VStack spacing={4} align="stretch" flex="1">
           <Heading 
-            size={{ base: 'md', md: 'lg' }} 
+            size="lg" 
             noOfLines={2}
-            lineHeight="1.2"
+            lineHeight="1.3"
+            color="gray.800"
           >
             {title}
           </Heading>
           
           <Text 
             color="gray.600" 
-            noOfLines={{ base: 2, md: 3 }}
-            fontSize={{ base: 'sm', md: 'md' }}
-            lineHeight="1.4"
+            noOfLines={3}
+            fontSize="md"
+            lineHeight="1.5"
+            flex="1"
           >
             {description}
           </Text>
 
-          {price && (
-            <HStack justify="space-between" align="center">
-              <Text 
-                color="blue.500" 
-                fontWeight="bold"
-                fontSize={{ base: 'lg', md: 'xl' }}
-              >
-                ${price}
-              </Text>
-              {children}
-            </HStack>
-          )}
-
-          {!price && children}
+          {/* Price and Button Section - Fixed at Bottom */}
+          <Box mt="auto">
+            {price && (
+              <HStack justify="space-between" align="center" mb={3}>
+                <Text 
+                  color="blue.500" 
+                  fontWeight="bold"
+                  fontSize="xl"
+                >
+                  ${price}
+                </Text>
+              </HStack>
+            )}
+            {children}
+          </Box>
         </VStack>
       </Box>
     </Box>

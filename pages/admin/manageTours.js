@@ -369,7 +369,6 @@ export default function ManageTours() {
 
   // Define fields for AdminCard
   const tourFields = [
-    { key: 'image', label: 'Image', type: 'image' },
     { key: 'name', label: 'Name', type: 'text' },
     { key: 'category', label: 'Category', type: 'badge', colorScheme: 'blue' },
     { key: 'duration', label: 'Duration', type: 'text' },

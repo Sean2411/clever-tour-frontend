@@ -64,7 +64,8 @@ export default function ToursList() {
       if (data.success) {
         const uploadedImages = data.data.images.filter(img => typeof img === 'object' && img.fileName);
         const primaryImage = uploadedImages.find(img => img.isPrimary);
-        return primaryImage ? primaryImage.original.url : null;
+        // 如果有主图，返回主图；否则返回第一张上传的图片
+        return primaryImage ? primaryImage.original.url : (uploadedImages.length > 0 ? uploadedImages[0].original.url : null);
       }
     } catch (error) {
       console.warn(`Failed to get images for tour ${tourId}:`, error);
