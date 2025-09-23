@@ -29,8 +29,10 @@ import AdminCard from '../../../components/AdminCard';
 import ResponsiveGrid from '../../../components/ResponsiveGrid';
 import { AdminOnly } from '../../../components/ProtectedRoute';
 import { api } from '../../../lib/api';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminBookings() {
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -50,7 +52,7 @@ export default function AdminBookings() {
     } catch (err) {
       console.error('Failed to get booking list:', err);
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: err.message,
         status: 'error',
         duration: 5000,
@@ -66,8 +68,8 @@ export default function AdminBookings() {
       await api.patch(`/api/admin/bookings/${bookingId}`, { status: newStatus });
 
       toast({
-        title: 'Success',
-        description: 'Booking status updated',
+        title: t('common.success'),
+        description: t('admin.bookings.statusUpdated'),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -77,7 +79,7 @@ export default function AdminBookings() {
     } catch (err) {
       console.error('Failed to update booking status:', err);
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: err.message,
         status: 'error',
         duration: 5000,
@@ -99,18 +101,18 @@ export default function AdminBookings() {
 
   const getStatusText = (status) => {
     const texts = {
-      pending: 'Pending',
-      confirmed: 'Confirmed',
-      cancelled: 'Cancelled',
+      pending: t('admin.bookings.status.pending'),
+      confirmed: t('admin.bookings.status.confirmed'),
+      cancelled: t('admin.bookings.status.cancelled'),
     };
     return texts[status] || status;
   };
 
   const getStatusDisplayText = (status) => {
     const texts = {
-      pending: 'Pending',
-      confirmed: 'Confirm',
-      cancelled: 'Cancel',
+      pending: t('admin.bookings.status.pending'),
+      confirmed: t('admin.bookings.status.confirm'),
+      cancelled: t('admin.bookings.status.cancel'),
     };
     return texts[status] || status;
   };
@@ -184,32 +186,32 @@ export default function AdminBookings() {
 
   // Define fields for AdminCard - responsive layout
   const bookingFields = [
-    { key: 'bookingNumber', label: 'Booking Number', type: 'text', flex: 1.2 },
-    { key: 'attractionName', label: 'Attraction', type: 'text', flex: 1.5 },
-    { key: 'customer', label: 'Customer', type: 'text', flex: 1.2 },
-    { key: 'date', label: 'Date', type: 'text', flex: 1 },
-    { key: 'people', label: 'People', type: 'text', flex: 1 },
-    { key: 'totalPrice', label: 'Total Price', type: 'price', flex: 0.8 },
-    { key: 'status', label: 'Status', type: 'status', flex: 0.8 },
+    { key: 'bookingNumber', label: t('admin.bookings.bookingNumber'), type: 'text', flex: 1.2 },
+    { key: 'attractionName', label: t('admin.bookings.attraction'), type: 'text', flex: 1.5 },
+    { key: 'customer', label: t('admin.bookings.customer'), type: 'text', flex: 1.2 },
+    { key: 'date', label: t('admin.bookings.date'), type: 'text', flex: 1 },
+    { key: 'people', label: t('admin.bookings.people'), type: 'text', flex: 1 },
+    { key: 'totalPrice', label: t('admin.bookings.totalPrice'), type: 'price', flex: 0.8 },
+    { key: 'status', label: t('admin.bookings.statusLabel'), type: 'status', flex: 0.8 },
   ];
 
   const exportToCSV = (data) => {
     const headers = [
-      'Order Number',
-      'Attraction/Tour Name',
-      'Customer Name',
-      'Customer Email',
-      'Customer Phone',
-      'Booking Date',
-      'Booking Time',
-      'Adults',
-      'Children',
-      'Total Price',
-      'Status',
-      'Payment Method',
-      'Payment Status',
-      'Special Requests',
-      'Created At'
+      t('admin.bookings.export.orderNumber'),
+      t('admin.bookings.export.attractionName'),
+      t('admin.bookings.export.customerName'),
+      t('admin.bookings.export.customerEmail'),
+      t('admin.bookings.export.customerPhone'),
+      t('admin.bookings.export.bookingDate'),
+      t('admin.bookings.export.bookingTime'),
+      t('admin.bookings.export.adults'),
+      t('admin.bookings.export.children'),
+      t('admin.bookings.export.totalPrice'),
+      t('admin.bookings.export.status'),
+      t('admin.bookings.export.paymentMethod'),
+      t('admin.bookings.export.paymentStatus'),
+      t('admin.bookings.export.specialRequests'),
+      t('admin.bookings.export.createdAt')
     ];
 
     const csvContent = [
@@ -251,21 +253,21 @@ export default function AdminBookings() {
     const worksheet = XLSX.utils.json_to_sheet(data.map(booking => {
       const processed = processBookingData(booking);
       return {
-        'Order Number': processed.bookingNumber,
-        'Attraction/Tour Name': processed.attractionName,
-        'Customer Name': processed.customer,
-        'Customer Email': processed.customerEmail,
-        'Customer Phone': processed.customerPhone,
-        'Booking Date': processed.dateForExport,
-        'Booking Time': processed.timeForExport,
-        'Adults': processed.adults,
-        'Children': processed.children,
-        'Total Price': processed.totalPrice,
-        'Status': processed.status,
-        'Payment Method': processed.paymentMethod,
-        'Payment Status': processed.paymentStatus,
-        'Special Requests': processed.specialRequests,
-        'Created At': processed.createdAt
+        [t('admin.bookings.export.orderNumber')]: processed.bookingNumber,
+        [t('admin.bookings.export.attractionName')]: processed.attractionName,
+        [t('admin.bookings.export.customerName')]: processed.customer,
+        [t('admin.bookings.export.customerEmail')]: processed.customerEmail,
+        [t('admin.bookings.export.customerPhone')]: processed.customerPhone,
+        [t('admin.bookings.export.bookingDate')]: processed.dateForExport,
+        [t('admin.bookings.export.bookingTime')]: processed.timeForExport,
+        [t('admin.bookings.export.adults')]: processed.adults,
+        [t('admin.bookings.export.children')]: processed.children,
+        [t('admin.bookings.export.totalPrice')]: processed.totalPrice,
+        [t('admin.bookings.export.status')]: processed.status,
+        [t('admin.bookings.export.paymentMethod')]: processed.paymentMethod,
+        [t('admin.bookings.export.paymentStatus')]: processed.paymentStatus,
+        [t('admin.bookings.export.specialRequests')]: processed.specialRequests,
+        [t('admin.bookings.export.createdAt')]: processed.createdAt
       };
     }));
 
@@ -289,8 +291,8 @@ export default function AdminBookings() {
       }
 
       toast({
-        title: 'Success',
-        description: `Bookings exported to ${format.toUpperCase()} successfully`,
+        title: t('common.success'),
+        description: t('admin.bookings.exportSuccess', { format: format.toUpperCase() }),
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -298,7 +300,7 @@ export default function AdminBookings() {
     } catch (err) {
       console.error('Failed to export bookings:', err);
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: err.message,
         status: 'error',
         duration: 5000,
@@ -312,7 +314,8 @@ export default function AdminBookings() {
   return (
     <AdminOnly>
       <Head>
-        <title>Booking Management - Smart Tourist</title>
+        <title>{t('admin.bookings.title')} - 智旅</title>
+        <meta name="description" content={t('admin.bookings.description')} />
       </Head>
 
       <Layout>
@@ -323,7 +326,7 @@ export default function AdminBookings() {
               size={{ base: "lg", md: "xl" }}
               textAlign={{ base: "center", md: "left" }}
             >
-              Booking Management
+              {t('admin.bookings.title')}
             </Heading>
           </VStack>
 
@@ -331,23 +334,23 @@ export default function AdminBookings() {
             <HStack spacing={{ base: 2, md: 4 }} justify="space-between" flexWrap="wrap">
               <VStack spacing={3} align="stretch" flex={1} minW={{ base: "100%", md: "auto" }}>
                 <Input
-                  placeholder="Search booking number, name or email"
+                  placeholder={t('admin.bookings.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   size={{ base: "md", md: "lg" }}
                   fontSize={{ base: "sm", md: "md" }}
                 />
                 <Select
-                  placeholder="Filter by status"
+                  placeholder={t('admin.bookings.filterPlaceholder')}
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   size={{ base: "md", md: "lg" }}
                   fontSize={{ base: "sm", md: "md" }}
                 >
-                  <option value="">All Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="cancelled">Cancelled</option>
+                  <option value="">{t('admin.bookings.allStatus')}</option>
+                  <option value="pending">{t('admin.bookings.status.pending')}</option>
+                  <option value="confirmed">{t('admin.bookings.status.confirmed')}</option>
+                  <option value="cancelled">{t('admin.bookings.status.cancelled')}</option>
                 </Select>
               </VStack>
               
@@ -357,17 +360,17 @@ export default function AdminBookings() {
                     leftIcon={<DownloadIcon />}
                     colorScheme="green"
                     isLoading={exportLoading}
-                    loadingText="Exporting..."
+                    loadingText={t('admin.bookings.exporting')}
                     size={{ base: "md", md: "lg" }}
                     width={{ base: "100%", md: "auto" }}
                   >
-                    Export
+                    {t('admin.bookings.exportButton')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent p={4}>
                   <PopoverArrow />
                   <PopoverCloseButton />
-                  <PopoverHeader>Choose Export Format</PopoverHeader>
+                  <PopoverHeader>{t('admin.bookings.chooseExportFormat')}</PopoverHeader>
                   <PopoverBody>
                     <VStack spacing={3}>
                       <Button
@@ -376,7 +379,7 @@ export default function AdminBookings() {
                         onClick={() => handleExport('csv')}
                         width="100%"
                       >
-                        Export as CSV
+                        {t('admin.bookings.exportAsCSV')}
                       </Button>
                       <Button
                         size="sm"
@@ -384,7 +387,7 @@ export default function AdminBookings() {
                         onClick={() => handleExport('excel')}
                         width="100%"
                       >
-                        Export as Excel
+                        {t('admin.bookings.exportAsExcel')}
                       </Button>
                     </VStack>
                   </PopoverBody>
@@ -399,7 +402,7 @@ export default function AdminBookings() {
             </Flex>
           ) : bookings.length === 0 ? (
             <Text textAlign="center" py={8}>
-              No bookings found
+              {t('admin.bookings.noBookingsFound')}
             </Text>
           ) : (
             <Box>
@@ -407,13 +410,13 @@ export default function AdminBookings() {
               <Box display={{ base: "none", md: "block" }} mb={2}>
                 <AdminCard
                   item={{
-                    bookingNumber: 'Booking Number',
-                    attractionName: 'Attraction',
-                    customer: 'Customer', 
-                    date: 'Date',
-                    people: 'People',
-                    totalPrice: 'Total Price', // 这个会按price类型渲染
-                    status: 'Status' // 这个会按status类型渲染
+                    bookingNumber: t('admin.bookings.bookingNumber'),
+                    attractionName: t('admin.bookings.attraction'),
+                    customer: t('admin.bookings.customer'), 
+                    date: t('admin.bookings.date'),
+                    people: t('admin.bookings.people'),
+                    totalPrice: t('admin.bookings.totalPrice'), // 这个会按price类型渲染
+                    status: t('admin.bookings.statusLabel') // 这个会按status类型渲染
                   }}
                   fields={bookingFields} // 使用原始字段类型！
                   actions={false}

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import EntityImageUploader from '../../components/EntityImageUploader';
 import Layout from '../../components/Layout';
+import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
 
 const ImageManagement = () => {
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState('tour');
   const [uploadHistory, setUploadHistory] = useState([]);
   const [selectedEntity, setSelectedEntity] = useState(null);
@@ -22,16 +25,19 @@ const ImageManagement = () => {
     setUploadHistory(prev => [historyItem, ...prev]);
     
     // 显示成功消息
-    alert(`Successfully uploaded ${historyItem.count} images to ${selectedTab === 'tour' ? 'tour' : 'attraction'}!`);
+    alert(t('admin.imageManagement.uploadSuccess', { 
+      count: historyItem.count, 
+      type: selectedTab === 'tour' ? t('admin.imageManagement.tour') : t('admin.imageManagement.attraction')
+    }));
   };
 
   const handleError = (error) => {
     console.error('上传错误:', error);
-    alert(`Upload failed: ${error}`);
+    alert(t('admin.imageManagement.uploadFailed', { error }));
   };
 
   const getEntityTypeLabel = (type) => {
-    return type === 'tour' ? 'Tour' : 'Attraction';
+    return type === 'tour' ? t('admin.imageManagement.tour') : t('admin.imageManagement.attraction');
   };
 
   const formatTimestamp = (timestamp) => {
@@ -63,7 +69,7 @@ const ImageManagement = () => {
 
   // 删除图片
   const deleteImage = async (entityType, entityId, fileName) => {
-    if (!confirm('确定要删除这张图片吗？')) return;
+    if (!confirm(t('admin.imageManagement.confirmDelete'))) return;
     
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
@@ -79,15 +85,15 @@ const ImageManagement = () => {
       const data = await response.json();
       
       if (data.success) {
-        alert('图片删除成功！');
+        alert(t('admin.imageManagement.deleteSuccess'));
         // 刷新图片列表
         fetchEntityImages(entityType, entityId);
       } else {
-        alert('删除失败：' + data.message);
+        alert(t('admin.imageManagement.deleteFailed', { message: data.message }));
       }
     } catch (error) {
       console.error('删除图片失败:', error);
-      alert('删除失败：' + error.message);
+      alert(t('admin.imageManagement.deleteFailed', { message: error.message }));
     }
   };
 
@@ -107,15 +113,15 @@ const ImageManagement = () => {
       const data = await response.json();
       
       if (data.success) {
-        alert('主图设置成功！');
+        alert(t('admin.imageManagement.setPrimarySuccess'));
         // 刷新图片列表
         fetchEntityImages(entityType, entityId);
       } else {
-        alert('设置主图失败：' + data.message);
+        alert(t('admin.imageManagement.setPrimaryFailed', { message: data.message }));
       }
     } catch (error) {
       console.error('设置主图失败:', error);
-      alert('设置主图失败：' + error.message);
+      alert(t('admin.imageManagement.setPrimaryFailed', { message: error.message }));
     }
   };
 
@@ -128,8 +134,12 @@ const ImageManagement = () => {
 
   return (
     <Layout>
+      <Head>
+        <title>{t('admin.imageManagement.title')} - 智旅</title>
+        <meta name="description" content={t('admin.imageManagement.description')} />
+      </Head>
       <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h1>Image Management</h1>
+        <h1>{t('admin.imageManagement.title')}</h1>
         
         {/* 功能切换标签 */}
         <div style={{ marginBottom: '30px' }}>
@@ -146,7 +156,7 @@ const ImageManagement = () => {
                 marginRight: '10px'
               }}
             >
-              Upload Images
+              {t('admin.imageManagement.uploadImages')}
             </button>
             <button
               onClick={() => setActiveSection('manage')}
@@ -159,7 +169,7 @@ const ImageManagement = () => {
                 borderBottom: activeSection === 'manage' ? '2px solid #007bff' : '2px solid transparent'
               }}
             >
-              Manage Images
+              {t('admin.imageManagement.manageImages')}
             </button>
           </div>
         </div>
@@ -178,7 +188,7 @@ const ImageManagement = () => {
                 borderBottom: selectedTab === 'tour' ? '2px solid #28a745' : '2px solid transparent'
               }}
             >
-              Tour Images
+              {t('admin.imageManagement.tourImages')}
             </button>
             <button
               onClick={() => setSelectedTab('attraction')}
@@ -191,7 +201,7 @@ const ImageManagement = () => {
                 borderBottom: selectedTab === 'attraction' ? '2px solid #28a745' : '2px solid transparent'
               }}
             >
-              Attraction Images
+              {t('admin.imageManagement.attractionImages')}
             </button>
           </div>
         </div>
@@ -200,7 +210,7 @@ const ImageManagement = () => {
         {activeSection === 'upload' ? (
           /* 图片上传组件 */
           <div style={{ marginBottom: '40px' }}>
-            <h2>Upload {getEntityTypeLabel(selectedTab)} Images</h2>
+            <h2>{t('admin.imageManagement.uploadTitle', { type: getEntityTypeLabel(selectedTab) })}</h2>
             <EntityImageUploader
               entityType={selectedTab}
               onUpload={handleUpload}
@@ -211,7 +221,7 @@ const ImageManagement = () => {
         ) : (
           /* 图片管理组件 */
           <div style={{ marginBottom: '40px' }}>
-            <h2>Manage {getEntityTypeLabel(selectedTab)} Images</h2>
+            <h2>{t('admin.imageManagement.manageTitle', { type: getEntityTypeLabel(selectedTab) })}</h2>
             
             {/* 实体选择器 */}
             <div style={{ marginBottom: '20px' }}>
@@ -232,23 +242,23 @@ const ImageManagement = () => {
                   borderRadius: '4px',
                   marginBottom: '20px'
                 }}>
-                  <h3>Selected: {selectedEntity.name}</h3>
+                  <h3>{t('admin.imageManagement.selected')}: {selectedEntity.name}</h3>
                   <p style={{ margin: '5px 0', color: '#666' }}>
-                    ID: {selectedEntity.id} | Type: {getEntityTypeLabel(selectedTab)}
+                    {t('admin.imageManagement.id')}: {selectedEntity.id} | {t('admin.imageManagement.type')}: {getEntityTypeLabel(selectedTab)}
                   </p>
                 </div>
 
                 {loading ? (
                   <div style={{ textAlign: 'center', padding: '40px' }}>
-                    <div>Loading images...</div>
+                    <div>{t('admin.imageManagement.loadingImages')}</div>
                   </div>
                 ) : entityImages.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-                    <div>No images found for this {selectedTab === 'tour' ? 'tour' : 'attraction'}</div>
+                    <div>{t('admin.imageManagement.noImagesFound', { type: selectedTab === 'tour' ? t('admin.imageManagement.tour') : t('admin.imageManagement.attraction') })}</div>
                   </div>
                 ) : (
                   <div>
-                    <h4>Images ({entityImages.length})</h4>
+                    <h4>{t('admin.imageManagement.images')} ({entityImages.length})</h4>
                     <div style={{
                       display: 'grid',
                       gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
@@ -297,7 +307,7 @@ const ImageManagement = () => {
                               {image.fileName}
                             </div>
                             <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
-                              Uploaded: {new Date(image.metadata.uploadedAt).toLocaleDateString()}
+                              {t('admin.imageManagement.uploaded')}: {new Date(image.metadata.uploadedAt).toLocaleDateString()}
                             </div>
 
                             {/* 操作按钮 */}
@@ -316,7 +326,7 @@ const ImageManagement = () => {
                                     fontSize: '12px'
                                   }}
                                 >
-                                  Set Primary
+                                  {t('admin.imageManagement.setPrimary')}
                                 </button>
                               )}
                               <button
@@ -332,7 +342,7 @@ const ImageManagement = () => {
                                   fontSize: '12px'
                                 }}
                               >
-                                Delete
+                                {t('admin.imageManagement.delete')}
                               </button>
                             </div>
                           </div>
@@ -349,7 +359,7 @@ const ImageManagement = () => {
         {/* Upload History */}
         {uploadHistory.length > 0 && (
           <div>
-            <h2>Upload History</h2>
+            <h2>{t('admin.imageManagement.uploadHistory')}</h2>
             <div style={{ 
               maxHeight: '400px', 
               overflowY: 'auto',
@@ -367,13 +377,13 @@ const ImageManagement = () => {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <strong>{getEntityTypeLabel(item.entityType)} Image Upload</strong>
+                      <strong>{getEntityTypeLabel(item.entityType)} {t('admin.imageManagement.imageUpload')}</strong>
                       <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
-                        {formatTimestamp(item.timestamp)} | Uploaded {item.count} images
+                        {formatTimestamp(item.timestamp)} | {t('admin.imageManagement.uploadedCount', { count: item.count })}
                       </div>
                     </div>
                     <div style={{ fontSize: '12px', color: '#666' }}>
-                      ID: {item.id}
+                      {t('admin.imageManagement.id')}: {item.id}
                     </div>
                   </div>
                   
@@ -422,32 +432,32 @@ const ImageManagement = () => {
 
         {/* Usage Instructions */}
         <div style={{ marginTop: '40px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-          <h3>Usage Instructions</h3>
+          <h3>{t('admin.imageManagement.usageInstructions')}</h3>
           <ol style={{ paddingLeft: '20px' }}>
-            <li>Select the type of images to upload (Tour or Attraction)</li>
-            <li>Enter keywords in the search box to find the target object</li>
-            <li>Click to select the {getEntityTypeLabel(selectedTab).toLowerCase()} to associate with</li>
-            <li>Drag and drop or click the upload area to select image files</li>
-            <li>The system will automatically generate multiple image sizes and associate them with the selected object</li>
-            <li>The first uploaded image will be automatically set as the primary image</li>
+            <li>{t('admin.imageManagement.instruction1')}</li>
+            <li>{t('admin.imageManagement.instruction2')}</li>
+            <li>{t('admin.imageManagement.instruction3', { type: getEntityTypeLabel(selectedTab).toLowerCase() })}</li>
+            <li>{t('admin.imageManagement.instruction4')}</li>
+            <li>{t('admin.imageManagement.instruction5')}</li>
+            <li>{t('admin.imageManagement.instruction6')}</li>
           </ol>
           
-          <h4>Supported Image Formats:</h4>
+          <h4>{t('admin.imageManagement.supportedFormats')}:</h4>
           <ul style={{ paddingLeft: '20px' }}>
             <li>JPEG (.jpg, .jpeg)</li>
             <li>PNG (.png)</li>
             <li>WebP (.webp)</li>
           </ul>
           
-          <h4>Image Size Limits:</h4>
+          <h4>{t('admin.imageManagement.sizeLimits')}:</h4>
           <ul style={{ paddingLeft: '20px' }}>
-            <li>Maximum 10MB per image</li>
-            <li>The system will automatically generate the following sizes:</li>
+            <li>{t('admin.imageManagement.maxSize')}</li>
+            <li>{t('admin.imageManagement.autoGenerate')}:</li>
             <ul style={{ paddingLeft: '20px' }}>
-              <li>Thumbnail: 300x200 pixels</li>
-              <li>Medium: 800x600 pixels</li>
-              <li>Large: 1920x1080 pixels</li>
-              <li>Original: Keep original dimensions</li>
+              <li>{t('admin.imageManagement.thumbnail')}: 300x200 pixels</li>
+              <li>{t('admin.imageManagement.medium')}: 800x600 pixels</li>
+              <li>{t('admin.imageManagement.large')}: 1920x1080 pixels</li>
+              <li>{t('admin.imageManagement.original')}: {t('admin.imageManagement.keepOriginal')}</li>
             </ul>
           </ul>
         </div>

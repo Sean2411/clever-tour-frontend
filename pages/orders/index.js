@@ -19,6 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 
 export default function Orders() {
@@ -26,6 +27,7 @@ export default function Orders() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const toast = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchOrders();
@@ -38,7 +40,7 @@ export default function Orders() {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch orders');
+        throw new Error(data.message || t('orders.fetchError'));
       }
 
       console.log('📋 Orders data received:', data.length, 'orders');
@@ -46,7 +48,7 @@ export default function Orders() {
     } catch (error) {
       console.error('Failed to fetch orders:', error);
       toast({
-        title: 'Error',
+        title: t('common.error'),
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -73,11 +75,11 @@ export default function Orders() {
   const getStatusText = (status) => {
     switch (status) {
       case 'confirmed':
-        return 'Confirmed';
+        return t('orders.status.confirmed');
       case 'pending':
-        return 'Pending';
+        return t('orders.status.pending');
       case 'cancelled':
-        return 'Cancelled';
+        return t('orders.status.cancelled');
       default:
         return status;
     }
@@ -99,25 +101,26 @@ export default function Orders() {
   return (
     <>
       <Head>
-        <title>My Orders - Smart Tourist</title>
+        <title>{t('orders.title')} - 智旅</title>
+        <meta name="description" content={t('orders.metaDescription')} />
       </Head>
       <Navbar />
       <Container maxW="container.xl" py={8}>
-        <Heading size="lg" mb={6}>My Orders</Heading>
+        <Heading size="lg" mb={6}>{t('orders.title')}</Heading>
 
         {orders.length === 0 ? (
           <Card>
             <CardBody>
               <Text textAlign="center" color="gray.500">
-                You don&apos;t have any orders yet
+                {t('orders.noOrders')}
               </Text>
-                              <Button
-                  mt={4}
-                  colorScheme="blue"
-                  onClick={() => router.push('/tours')}
-                >
-                  Browse Tours
-                </Button>
+              <Button
+                mt={4}
+                colorScheme="blue"
+                onClick={() => router.push('/tours')}
+              >
+                {t('orders.browseTours')}
+              </Button>
             </CardBody>
           </Card>
         ) : (
@@ -147,7 +150,7 @@ export default function Orders() {
                       </>
                     ) : (
                       <Box>
-                        <Heading size="md">Booking #{order.orderNumber || order.bookingNumber}</Heading>
+                        <Heading size="md">{t('orders.bookingNumber')} #{order.orderNumber || order.bookingNumber}</Heading>
                         <Badge colorScheme={getStatusColor(order.status)} mt={2}>
                           {getStatusText(order.status)}
                         </Badge>
@@ -158,37 +161,37 @@ export default function Orders() {
 
                     <VStack align="stretch" spacing={2}>
                       <HStack justify="space-between">
-                        <Text color="gray.500">Order Number</Text>
+                        <Text color="gray.500">{t('orders.orderNumber')}</Text>
                         <Text fontWeight="bold">{order.orderNumber || order.bookingNumber}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">Booking Date</Text>
+                        <Text color="gray.500">{t('orders.bookingDate')}</Text>
                         <Text>{order.bookingDate || new Date(order.createdAt).toLocaleDateString()}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">Booking Time</Text>
+                        <Text color="gray.500">{t('orders.bookingTime')}</Text>
                         <Text>{order.bookingTime || new Date(order.createdAt).toLocaleTimeString()}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">Visit Date</Text>
-                        <Text>{order.visitDate ? new Date(order.visitDate).toLocaleDateString() : 'TBD'}</Text>
+                        <Text color="gray.500">{t('orders.visitDate')}</Text>
+                        <Text>{order.visitDate ? new Date(order.visitDate).toLocaleDateString() : t('orders.tbd')}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">People</Text>
-                        <Text>{order.numberOfAdults || order.adults || 0}A + {order.numberOfChildren || order.children || 0}C</Text>
+                        <Text color="gray.500">{t('orders.people')}</Text>
+                        <Text>{order.numberOfAdults || order.adults || 0}{t('orders.adults')} + {order.numberOfChildren || order.children || 0}{t('orders.children')}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">Rooms</Text>
+                        <Text color="gray.500">{t('orders.rooms')}</Text>
                         <Text>{order.rooms || 1}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">Payment</Text>
+                        <Text color="gray.500">{t('orders.payment')}</Text>
                         <Badge colorScheme={order.paymentStatus === 'paid' ? 'green' : 'yellow'} size="sm">
-                          {order.paymentStatus || 'Pending'}
+                          {order.paymentStatus === 'paid' ? t('orders.paymentStatus.paid') : t('orders.paymentStatus.pending')}
                         </Badge>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">Total Price</Text>
+                        <Text color="gray.500">{t('orders.totalPrice')}</Text>
                         <Text color="blue.500" fontWeight="bold">
                           ${order.totalPrice}
                         </Text>
@@ -200,7 +203,7 @@ export default function Orders() {
                       size="sm"
                       onClick={() => router.push(`/orders/${order.id}`)}
                     >
-                      View Details
+                      {t('orders.viewDetails')}
                     </Button>
                   </VStack>
                 </CardBody>

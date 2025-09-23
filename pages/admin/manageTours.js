@@ -51,6 +51,7 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, EditIcon, SearchIcon } from '@chakra-ui/icons';
 import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { AdminOnly } from '../../components/ProtectedRoute';
@@ -58,6 +59,7 @@ import AdminCard from '../../components/AdminCard';
 import ResponsiveGrid from '../../components/ResponsiveGrid';
 
 export default function ManageTours() {
+  const { t } = useTranslation();
   const [tours, setTours] = useState([]);
   const [filteredTours, setFilteredTours] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,18 +98,18 @@ export default function ManageTours() {
   });
 
   const categories = [
-    'City Sightseeing',
-    'Natural Landscape',
-    'Historical Culture',
-    'Theme Park',
-    'Food Tour',
-    'Shopping Tour'
+    { value: 'City Sightseeing', label: t('tours.citySightseeing') },
+    { value: 'Natural Landscape', label: t('tours.naturalLandscape') },
+    { value: 'Historical Culture', label: t('tours.historicalCulture') },
+    { value: 'Theme Park', label: t('tours.themePark') },
+    { value: 'Food Tour', label: t('tours.foodTour') },
+    { value: 'Shopping Tour', label: t('tours.shoppingTour') }
   ];
 
   const statusOptions = [
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
-    { value: 'sold_out', label: 'Sold Out' }
+    { value: 'active', label: t('admin.tourStatus.active') },
+    { value: 'inactive', label: t('admin.tourStatus.inactive') },
+    { value: 'sold_out', label: t('admin.tourStatus.soldOut') }
   ];
 
   useEffect(() => {
@@ -139,8 +141,8 @@ export default function ManageTours() {
         setTours(data.tours);
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to fetch tours',
+          title: t('common.error'),
+          description: t('admin.fetchToursError'),
           status: 'error',
           duration: 3000,
           isClosable: true,
@@ -149,8 +151,8 @@ export default function ManageTours() {
     } catch (error) {
       console.error('Error fetching tours:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to fetch tours',
+        title: t('common.error'),
+        description: t('admin.fetchToursError'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -177,8 +179,8 @@ export default function ManageTours() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Tour created successfully',
+          title: t('common.success'),
+          description: t('admin.tourCreatedSuccess'),
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -188,8 +190,8 @@ export default function ManageTours() {
         fetchTours();
       } else {
         toast({
-          title: 'Error',
-          description: data.message || 'Failed to create tour',
+          title: t('common.error'),
+          description: data.message || t('admin.createTourError'),
           status: 'error',
           duration: 3000,
           isClosable: true,
@@ -198,8 +200,8 @@ export default function ManageTours() {
     } catch (error) {
       console.error('Error creating tour:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to create tour',
+        title: t('common.error'),
+        description: t('admin.createTourError'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -224,8 +226,8 @@ export default function ManageTours() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Tour updated successfully',
+          title: t('common.success'),
+          description: t('admin.tourUpdatedSuccess'),
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -236,8 +238,8 @@ export default function ManageTours() {
         fetchTours();
       } else {
         toast({
-          title: 'Error',
-          description: data.message || 'Failed to update tour',
+          title: t('common.error'),
+          description: data.message || t('admin.updateTourError'),
           status: 'error',
           duration: 3000,
           isClosable: true,
@@ -246,8 +248,8 @@ export default function ManageTours() {
     } catch (error) {
       console.error('Error updating tour:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to update tour',
+        title: t('common.error'),
+        description: t('admin.updateTourError'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -272,8 +274,8 @@ export default function ManageTours() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Tour deleted successfully',
+          title: t('common.success'),
+          description: t('admin.tourDeletedSuccess'),
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -283,8 +285,8 @@ export default function ManageTours() {
         fetchTours();
       } else {
         toast({
-          title: 'Error',
-          description: data.message || 'Failed to delete tour',
+          title: t('common.error'),
+          description: data.message || t('admin.deleteTourError'),
           status: 'error',
           duration: 3000,
           isClosable: true,
@@ -293,8 +295,8 @@ export default function ManageTours() {
     } catch (error) {
       console.error('Error deleting tour:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to delete tour',
+        title: t('common.error'),
+        description: t('admin.deleteTourError'),
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -407,8 +409,8 @@ export default function ManageTours() {
   return (
     <AdminOnly>
       <Head>
-        <title>Manage Tours - Clever Tour</title>
-        <meta name="description" content="Manage tours for administrators" />
+        <title>{t('admin.manageTours')} - 智旅</title>
+        <meta name="description" content={t('admin.manageToursDescription')} />
       </Head>
 
       <Navbar />
@@ -419,7 +421,7 @@ export default function ManageTours() {
               size={{ base: "lg", md: "xl" }}
               textAlign={{ base: "center", md: "left" }}
             >
-              Manage Tours
+              {t('admin.manageTours')}
             </Heading>
             <Button 
               leftIcon={<AddIcon />} 
@@ -428,7 +430,7 @@ export default function ManageTours() {
               size={{ base: "md", md: "lg" }}
               width={{ base: "100%", md: "auto" }}
             >
-              Add Tour
+              {t('admin.addTour')}
             </Button>
           </VStack>
 
@@ -436,7 +438,7 @@ export default function ManageTours() {
           <Box>
             <HStack spacing={{ base: 2, md: 4 }}>
               <Input
-                placeholder="Search tours by name, category, or departure city..."
+                placeholder={t('admin.searchTours')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 size={{ base: "md", md: "lg" }}
@@ -470,7 +472,7 @@ export default function ManageTours() {
             fontSize={{ base: "sm", md: "md" }}
             textAlign={{ base: "center", md: "left" }}
           >
-            Total tours: {filteredTours.length}
+            {t('admin.totalTours')}: {filteredTours.length}
           </Text>
         </VStack>
       </Container>
@@ -479,54 +481,54 @@ export default function ManageTours() {
       <Modal isOpen={isAddOpen || isEditOpen} onClose={isAddOpen ? onAddClose : onEditClose} size="xl" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent maxW="4xl">
-          <ModalHeader>{isAddOpen ? 'Add New Tour' : 'Edit Tour'}</ModalHeader>
+          <ModalHeader>{isAddOpen ? t('admin.addNewTour') : t('admin.editTour')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4} align="stretch">
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                 <FormControl isRequired>
-                  <FormLabel>Tour Name</FormLabel>
+                  <FormLabel>{t('admin.tourName')}</FormLabel>
                   <Input
                     value={tourForm.name}
                     onChange={(e) => setTourForm({ ...tourForm, name: e.target.value })}
-                    placeholder="Enter tour name"
+                    placeholder={t('admin.enterTourName')}
                   />
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>{t('admin.category')}</FormLabel>
                   <Select
                     value={tourForm.category}
                     onChange={(e) => setTourForm({ ...tourForm, category: e.target.value })}
-                    placeholder="Select category"
+                    placeholder={t('admin.selectCategory')}
                   >
                     {categories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat.value} value={cat.value}>{cat.label}</option>
                     ))}
                   </Select>
                 </FormControl>
               </SimpleGrid>
 
               <FormControl isRequired>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{t('admin.description')}</FormLabel>
                 <Textarea
                   value={tourForm.description}
                   onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })}
-                  placeholder="Enter tour description"
+                  placeholder={t('admin.enterTourDescription')}
                   rows={3}
                 />
               </FormControl>
 
               <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                 <FormControl isRequired>
-                  <FormLabel>Duration</FormLabel>
+                  <FormLabel>{t('admin.duration')}</FormLabel>
                   <Input
                     value={tourForm.duration}
                     onChange={(e) => setTourForm({ ...tourForm, duration: e.target.value })}
-                    placeholder="e.g., 3 Days"
+                    placeholder={t('admin.enterDuration')}
                   />
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel>Price ($)</FormLabel>
+                  <FormLabel>{t('admin.price')} ($)</FormLabel>
                   <NumberInput
                     value={tourForm.price}
                     onChange={(value) => setTourForm({ ...tourForm, price: parseFloat(value) || 0 })}
@@ -540,7 +542,7 @@ export default function ManageTours() {
                   </NumberInput>
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel>Original Price ($)</FormLabel>
+                  <FormLabel>{t('admin.originalPrice')} ($)</FormLabel>
                   <NumberInput
                     value={tourForm.originalPrice}
                     onChange={(value) => setTourForm({ ...tourForm, originalPrice: parseFloat(value) || 0 })}
@@ -557,7 +559,7 @@ export default function ManageTours() {
 
               <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                 <FormControl isRequired>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel>{t('admin.rating')}</FormLabel>
                   <NumberInput
                     value={tourForm.rating}
                     onChange={(value) => setTourForm({ ...tourForm, rating: parseFloat(value) || 0 })}
@@ -573,7 +575,7 @@ export default function ManageTours() {
                   </NumberInput>
                 </FormControl>
                 <FormControl>
-                  <FormLabel>Review Count</FormLabel>
+                  <FormLabel>{t('admin.reviewCount')}</FormLabel>
                   <NumberInput
                     value={tourForm.reviewCount}
                     onChange={(value) => setTourForm({ ...tourForm, reviewCount: parseInt(value) || 0 })}
@@ -587,7 +589,7 @@ export default function ManageTours() {
                   </NumberInput>
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{t('admin.status')}</FormLabel>
                   <Select
                     value={tourForm.status}
                     onChange={(e) => setTourForm({ ...tourForm, status: e.target.value })}
@@ -601,26 +603,26 @@ export default function ManageTours() {
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                 <FormControl isRequired>
-                  <FormLabel>Departure City</FormLabel>
+                  <FormLabel>{t('admin.departureCity')}</FormLabel>
                   <Input
                     value={tourForm.departureCity}
                     onChange={(e) => setTourForm({ ...tourForm, departureCity: e.target.value })}
-                    placeholder="Enter departure city"
+                    placeholder={t('admin.enterDepartureCity')}
                   />
                 </FormControl>
                 <FormControl isRequired>
-                  <FormLabel>Image URL</FormLabel>
+                  <FormLabel>{t('admin.imageUrl')}</FormLabel>
                   <Input
                     value={tourForm.image}
                     onChange={(e) => setTourForm({ ...tourForm, image: e.target.value })}
-                    placeholder="Enter image URL"
+                    placeholder={t('admin.enterImageUrl')}
                   />
                 </FormControl>
               </SimpleGrid>
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                 <FormControl isRequired>
-                  <FormLabel>Max Group Size</FormLabel>
+                  <FormLabel>{t('admin.maxGroupSize')}</FormLabel>
                   <NumberInput
                     value={tourForm.maxGroupSize}
                     onChange={(value) => setTourForm({ ...tourForm, maxGroupSize: parseInt(value) || 1 })}
@@ -634,7 +636,7 @@ export default function ManageTours() {
                   </NumberInput>
                 </FormControl>
                 <FormControl>
-                  <FormLabel>Minimum Age</FormLabel>
+                  <FormLabel>{t('admin.minimumAge')}</FormLabel>
                   <NumberInput
                     value={tourForm.minAge}
                     onChange={(value) => setTourForm({ ...tourForm, minAge: parseInt(value) || 0 })}
@@ -651,10 +653,10 @@ export default function ManageTours() {
 
               {/* Features */}
               <FormControl>
-                <FormLabel>Features</FormLabel>
+                <FormLabel>{t('admin.features')}</FormLabel>
                 <HStack>
                   <Input
-                    placeholder="Add feature"
+                    placeholder={t('admin.addFeature')}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -678,10 +680,10 @@ export default function ManageTours() {
 
               {/* Highlights */}
               <FormControl>
-                <FormLabel>Highlights</FormLabel>
+                <FormLabel>{t('admin.highlights')}</FormLabel>
                 <HStack>
                   <Input
-                    placeholder="Add highlight"
+                    placeholder={t('admin.addHighlight')}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -705,10 +707,10 @@ export default function ManageTours() {
 
               {/* Includes */}
               <FormControl>
-                <FormLabel>What&apos;s Included</FormLabel>
+                <FormLabel>{t('admin.whatsIncluded')}</FormLabel>
                 <HStack>
                   <Input
-                    placeholder="Add included item"
+                    placeholder={t('admin.addIncludedItem')}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -732,10 +734,10 @@ export default function ManageTours() {
 
               {/* Excludes */}
               <FormControl>
-                <FormLabel>What&apos;s Not Included</FormLabel>
+                <FormLabel>{t('admin.whatsNotIncluded')}</FormLabel>
                 <HStack>
                   <Input
-                    placeholder="Add excluded item"
+                    placeholder={t('admin.addExcludedItem')}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -760,10 +762,10 @@ export default function ManageTours() {
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={isAddOpen ? onAddClose : onEditClose}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button colorScheme="blue" onClick={isAddOpen ? handleAddTour : handleEditTour}>
-              {isAddOpen ? 'Add Tour' : 'Update Tour'}
+              {isAddOpen ? t('admin.addTour') : t('admin.updateTour')}
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -774,17 +776,17 @@ export default function ManageTours() {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Tour
+              {t('admin.deleteTour')}
             </AlertDialogHeader>
             <AlertDialogBody>
-              Are you sure you want to delete tour &quot;{deleteTour?.name}&quot;? This action cannot be undone.
+              {t('admin.deleteTourConfirm', { tourName: deleteTour?.name })}
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={onDeleteClose}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button colorScheme="red" onClick={handleDeleteTour} ml={3}>
-                Delete
+                {t('common.delete')}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
